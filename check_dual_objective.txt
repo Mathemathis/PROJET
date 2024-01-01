@@ -1,0 +1,3 @@
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 46226.95
