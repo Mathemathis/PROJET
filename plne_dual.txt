@@ -1,0 +1,32 @@
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_TimeLimit                               60
+Clique table members: 19.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    62   Dual objective     =         11484.333333
+Root relaxation solution time = 0.00 sec. (0.61 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0    11484.3333    20                  11484.3333       64         
+      0     0    12520.3592    26                     Cuts: 4       81         
+*     0+    0                        15656.5200    12520.3592            20.03%
+Found incumbent of value 15656.520000 after 0.02 sec. (4.88 ticks)
+      0     0    12857.6418    26    15656.5200      Cuts: 14       85   17.88%
+      0     0    13015.4658    24    15656.5200       Cuts: 4       90   16.87%
+*     0+    0                        15332.5600    13015.4658            15.11%
+Found incumbent of value 15332.560000 after 0.02 sec. (10.16 ticks)
+Detecting symmetries...
+      0     2    13015.4658    23    15332.5600    13282.9887       90   13.37%
+Elapsed time = 0.02 sec. (15.02 ticks, tree = 0.01 MB, solutions = 2)
+FEASIBLE_POINT
+OPTIMAL
