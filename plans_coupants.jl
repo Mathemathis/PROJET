@@ -92,7 +92,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
             set_silent(SP1)
             @variable(SP1, delta_1[i in 1:n, j in deltap[i]]>=0)    
 
-            @constraint(SP1,  [i in 1:n, j in deltap[i]], delta_1[i,j]<=d[i,j])
+            @constraint(SP1,  [i in 1:n, j in deltap[i]], delta_1[i,j]<=D[i,j])
 
             @constraint(SP1,  sum(delta_1[i,j] for i in 1:n for j in deltap[i])<=d1)
             
