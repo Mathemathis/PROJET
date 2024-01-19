@@ -13,14 +13,22 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
         push!(deltam[j],i)
     end
 
+    order_ph=sortperm(ph, rev=true)
+    Dh=[D[key] for key in collect(keys(D))]
+    order_dh=sortperm(Dh, rev=true)
+    nD=size(order_dh)[1]
+    Keys=collect(keys(D))
+
     m = Model(CPLEX.Optimizer)
-    set_silent(m)
+    # set_silent(m)
     
     set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Limits_CutsFactor", 0)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Strategy_FPHeur", -1)
-    set_optimizer_attribute(m, "CPX_PARAM_SCRIND", 0)
+    # set_optimizer_attribute(m, "CPX_PARAM_SCRIND", 0)
     set_optimizer_attribute(m, "CPXPARAM_TimeLimit", timelimit)
+    set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
+    set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
     MOI.set(m, MOI.NumberOfThreads(), 1)
 
@@ -41,85 +49,103 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
 
     @objective(m, Min, z)
 
+    iter=0
+    
+    derniere_solution=[]
+    x_last=Dict()
+
     function mon_super_callback(cb_data::CPLEX.CallbackContext, context_id::Clong)
         if isIntegerPoint(cb_data, context_id)
+
+            iter+=1
     
             CPLEX.load_callback_variable_primal(cb_data, context_id)
 
-
-            x_val = Matrix{Float64}(undef,n,n) # matrice
-
-            for i in 1:n
-                for j in deltap[i]
-                    x_val[i,j] = callback_value(cb_data, x[i,j])
-                end
-            end
+            x_val=Dict(key => callback_value(cb_data, x[key]) for key in Keys)
 
             a_val = [callback_value(cb_data, a[i]) for i in 1:n]
+            nodes_visited= [i for i in 1:n if a_val[i]>1e-5]
 
             z_etoile = callback_value(cb_data, z)
-            println("current z* = ", z_etoile)
               
             # poids du chemin
 
-            SP2 = Model(CPLEX.Optimizer)
-            set_silent(SP2)
-
-            @variable(SP2, delta_2[1:n]>=0)    
-
-            @constraint(SP2,  [i in 1:n], delta_2[i]<=2)
-            @constraint(SP2,  sum(delta_2[i] for i in 1:n)<=d2)
-            
-            set_optimizer_attribute(SP2, "CPXPARAM_Preprocessing_Presolve", 0)
-            set_optimizer_attribute(SP2, "CPXPARAM_TimeLimit", timelimit)
-            set_optimizer_attribute(SP2, "CPX_PARAM_THREADS", 1)
-            set_optimizer_attribute(SP2, "CPXPARAM_MIP_Display", 4)
-
-            @objective(SP2, Max, sum(a_val[i]*(p[i]+delta_2[i]*ph[i]) for i in 1:n))
-            optimize!(SP2)
-            delta_2_val = JuMP.value.(delta_2)
-
-            if JuMP.objective_value(SP2) >= S + 1e-5
+            res=sum([a_val[i]*p[i] for i in 1:n])
+            capa=0
+            I=1
+            delta_2_val = [0 for i in 1:n]
+            while capa+2<=d2 && I<=n
+                if a_val[order_ph[I]]>1e-5
+                    capa+=2
+                    res+=2*ph[order_ph[I]]
+                    delta_2_val[order_ph[I]]=2
+                end
+                I+=1
+            end
+            while I<=n && a_val[order_ph[I]]<1e-5
+                I+=1
+            end
+            if I<=n
+                res+=(d2-capa)*ph[order_ph[I]]
+                delta_2_val[order_ph[I]]=d2-capa
+            end
+        
+            if res >= S + 1e-5
                 cstr = @build_constraint(sum(a[i]*(p[i]+delta_2_val[i]*ph[i]) for i in 1:n) <= S)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr)
-                println("Ajout d'une contrainte de type 23")
+                # println("Ajout d'une contrainte de type 23")
             
-            end
+            else
 
-            # duree du chemin
+                # duree du chemin
 
-            SP1 = Model(CPLEX.Optimizer)
-            set_silent(SP1)
-            @variable(SP1, delta_1[i in 1:n, j in deltap[i]]>=0)    
+                res=sum([x_val[key]*d[key] for key in Keys])
+                capa=0
+                I=1
+                delta_1_val = Dict(key => 0.0 for key in collect(keys(D)))
+                while capa+D[Keys[order_dh[I]]]<=d1 && I<nD
+                    if x_val[Keys[order_dh[I]]]>1e-5
+                        capa+=D[Keys[order_dh[I]]]
+                        res+=d[Keys[order_dh[I]]]*D[Keys[order_dh[I]]]
+                        delta_1_val[Keys[order_dh[I]]]=D[Keys[order_dh[I]]]
+                    end
+                    I+=1
+                end
+                while I<=nD && x_val[Keys[order_dh[I]]]<1e-5
+                    I+=1
+                end
+                if I<=nD
+                    res+=d[Keys[order_dh[I]]]*(d1-capa)
+                    delta_1_val[Keys[order_dh[I]]]=d1-capa
+                end
 
-            @constraint(SP1,  [i in 1:n, j in deltap[i]], delta_1[i,j]<=D[i,j])
-
-            @constraint(SP1,  sum(delta_1[i,j] for i in 1:n for j in deltap[i])<=d1)
-            
-            set_optimizer_attribute(SP1, "CPXPARAM_Preprocessing_Presolve", 0)
-            set_optimizer_attribute(SP1, "CPXPARAM_TimeLimit", timelimit)
-            set_optimizer_attribute(SP1, "CPX_PARAM_THREADS", 1)
-            set_optimizer_attribute(SP1, "CPXPARAM_MIP_Display", 4)
-
-            @objective(SP1, Max, sum(x_val[i,j]*d[i,j]*(1+delta_1[i,j]) for i in 1:n for j in deltap[i]))
-            optimize!(SP1)
-            delta_1_val = JuMP.value.(delta_1)
-
-            if JuMP.objective_value(SP1) >=  z_etoile + 1e-5
-                println("solution SP1 =  ", JuMP.objective_value(SP1))
-                cstr2 = @build_constraint(sum(x[i,j]*d[i,j]*(1+delta_1_val[i,j]) for i in 1:n for j in deltap[i]) <= z)
-                MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
-                println("Ajout d'une contrainte de type 24")
+                if res >=  z_etoile + 1e-5
+                    cstr2 = @build_constraint(sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
+                    MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
+                    # println("Ajout d'une contrainte de type 24 ")
+                elseif derniere_solution!=nodes_visited
+                    # println("Ajout d'une contrainte de type 25 ")
+                    # Contrainte à prouver: elle permet d'enlever de la symmétrie. 
+                    # L'hypothèse est que si sum(x*d*(1+D))<= sum(y*d*(1+D)) alors v(x)<=v(y) (avec v(x) la vraie valeure de la solution)
+                    # Une fois une solution y est trouvée, on va donc chercher des solutions vraiment plus petites (ça enlève des solutions de même coût)
+                    # cstr3 = @build_constraint(sum(x[key]*d[key]*(1+D[key]) for key in Keys)+ sum(a_val[i]-a[i] for i in 1:n if a_val[i]>1e-5)/sum(a_val)<= sum([x_val[key]*d[key]*(1+D[key]) for key in Keys]))
+                    
+                    # Cette contrainte fonctionne aussi avec l'hypothèseque d[i,j]=d[i', j'] <=> D[i,j]=D[i', j'] ce qui est le cas dans nos données
+                    cstr3 = @build_constraint(sum(x[key]*d[key] for key in Keys)+ sum(a_val[i]-a[i] for i in 1:n if a_val[i]>1e-5)/sum(a_val)<= sum([x_val[key]*d[key] for key in Keys]))
+                    MOI.submit(m, MOI.LazyConstraint(cb_data), cstr3)
+                    x_last=deepcopy(x_val)
+                    derniere_solution=deepcopy(nodes_visited)
+                end
             end
         end
     end
 
-    #logfile_name = "plans_coupants.txt"
+    logfile_name = "plans_coupants.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
-    #logfile_path = abspath(logfile_name)
-    #logfile = open(logfile_path, "w")
-    #redirect_stdout(logfile)
+    logfile_path = abspath(logfile_name)
+    logfile = open(logfile_path, "w")
+    redirect_stdout(logfile)
 
     # On précise que le modèle doit utiliser notre fonction de callback
     MOI.set(m, CPLEX.CallbackFunction(), mon_super_callback)
@@ -134,6 +160,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
         # Récupération des valeurs d’une variable 
         # println("Value x : ", JuMP.value.(x))
         println("Valeur de l’objectif : ", JuMP.objective_value(m))
+        println("Nombre d'itérations : ", iter)
         return JuMP.value.(x), JuMP.value.(a)
     end
 end
