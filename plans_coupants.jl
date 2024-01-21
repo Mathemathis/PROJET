@@ -2,6 +2,8 @@ using JuMP
 using CPLEX
 
 function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64, p::Vector{Int64}, ph::Vector{Int64}, d::Dict{Any, Any}, D::Dict{Any, Any}, timelimit)
+    """Résout la méthode des plans coupants (par callback)"""
+    # initialisation des voisinages entrants et sortants pour chaque sommet
     deltap=Dict()
     deltam=Dict()
     for i in 1:n
@@ -13,9 +15,9 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
         push!(deltam[j],i)
     end
 
-    order_ph=sortperm(ph, rev=true)
-    Dh=[D[key] for key in collect(keys(D))]
-    order_dh=sortperm(Dh, rev=true)
+    order_ph=sortperm(ph, rev=true) # ph = p chapeau (incertitude pour le poids de chaque sommet) -> donne les indices dans l'ordre décroissant des ph
+    Dh=[D[key] for key in collect(keys(D))] # stocke les distances dans un vecteur
+    order_dh=sortperm(Dh, rev=true) # ordre décroissant des distances
     nD=size(order_dh)[1]
     Keys=collect(keys(D))
 
@@ -59,51 +61,55 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
 
             iter+=1
     
-            CPLEX.load_callback_variable_primal(cb_data, context_id)
+            CPLEX.load_callback_variable_primal(cb_data, context_id) # on regardera les valeurs des variables dans la solution courante
 
-            x_val=Dict(key => callback_value(cb_data, x[key]) for key in Keys)
+            x_val=Dict(key => callback_value(cb_data, x[key]) for key in Keys) # on stocke x
+            a_val = [callback_value(cb_data, a[i]) for i in 1:n] # on stocke a
 
-            a_val = [callback_value(cb_data, a[i]) for i in 1:n]
             nodes_visited= [i for i in 1:n if a_val[i]>1e-5]
 
-            z_etoile = callback_value(cb_data, z)
+            z_etoile = callback_value(cb_data, z) # valeur objectif actuelle
               
             # poids du chemin
+            """Idée : on ajoute une contrainte sur le poids des sommets en trouvant un augmentation des poids très élevée"""
 
             res=sum([a_val[i]*p[i] for i in 1:n])
-            capa=0
-            I=1
-            delta_2_val = [0 for i in 1:n]
-            while capa+2<=d2 && I<=n
-                if a_val[order_ph[I]]>1e-5
-                    capa+=2
-                    res+=2*ph[order_ph[I]]
-                    delta_2_val[order_ph[I]]=2
+            capa=0 # budget pour augmenter les delta^2
+            I=1 # on regarde les indices dans l'ordre dans l'ordre des p^hat qui permettent d'augmenter le plus le poids du chemin
+            delta_2_val = [0 for i in 1:n] # on stocke les delta^2
+
+            while capa+2<=d2 && I<=n # tant que j'ai encore du budget pour augmenter le poids de mes sommets
+                if a_val[order_ph[I]]>1e-5 # c'est bien un sommet que j'ai sélectionné 
+                    capa+=2 # augmentation du budget
+                    res+=2*ph[order_ph[I]] # augmentation du poids total des sommets
+                    delta_2_val[order_ph[I]]=2 # stockage valeur delta^2
                 end
                 I+=1
             end
-            while I<=n && a_val[order_ph[I]]<1e-5
+
+            while I<=n && a_val[order_ph[I]]<1e-5 # on passe les sommets restants non selectionnés
                 I+=1
             end
-            if I<=n
-                res+=(d2-capa)*ph[order_ph[I]]
+
+            if I<=n # on augmente avec le budget qu'il nous reste
+                res+=(d2-capa)*ph[order_ph[I]] 
                 delta_2_val[order_ph[I]]=d2-capa
             end
         
-            if res >= S + 1e-5
+            if res >= S + 1e-5 # si notre poids est plus grand que S -> ajout de la contrainte
                 cstr = @build_constraint(sum(a[i]*(p[i]+delta_2_val[i]*ph[i]) for i in 1:n) <= S)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr)
                 # println("Ajout d'une contrainte de type 23")
             
             else
-
                 # duree du chemin
+                """Même idée sur les chemins : on augmente le poids d'un chemin en trouvant les arcs qui augmente le plus le coût"""
 
                 res=sum([x_val[key]*d[key] for key in Keys])
                 capa=0
                 I=1
-                delta_1_val = Dict(key => 0.0 for key in collect(keys(D)))
-                while capa+D[Keys[order_dh[I]]]<=d1 && I<nD
+                delta_1_val = Dict(key => 0.0 for key in collect(keys(D))) # on initialise tous les delta^1 des arêtes à 0
+                while capa+D[Keys[order_dh[I]]]<=d1 && I<nD # exactement même idée que pour les sommets
                     if x_val[Keys[order_dh[I]]]>1e-5
                         capa+=D[Keys[order_dh[I]]]
                         res+=d[Keys[order_dh[I]]]*D[Keys[order_dh[I]]]
@@ -119,11 +125,12 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
                     delta_1_val[Keys[order_dh[I]]]=d1-capa
                 end
 
-                if res >=  z_etoile + 1e-5
+                if res >=  z_etoile + 1e-5 # si le coût du chemin est plus grand que la valeur objectif actuelle -> ajout de la contrainte
                     cstr2 = @build_constraint(sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
                     MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
                     # println("Ajout d'une contrainte de type 24 ")
-                elseif derniere_solution!=nodes_visited
+
+                elseif derniere_solution!=nodes_visited # nodes visited : noeuds dans la solution que l'on regarde
                     # println("Ajout d'une contrainte de type 25 ")
                     # Contrainte à prouver: elle permet d'enlever de la symmétrie. 
                     # L'hypothèse est que si sum(x*d*(1+D))<= sum(y*d*(1+D)) alors v(x)<=v(y) (avec v(x) la vraie valeure de la solution)

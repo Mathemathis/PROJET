@@ -2,6 +2,7 @@ using JuMP
 using CPLEX
 
 function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, timelimit)
+    """Crée une modèle et résoute le problème compact (sans incertitudes)"""
     deltap=Dict()
     deltam=Dict()
     for i in 1:n
