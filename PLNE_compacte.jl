@@ -35,7 +35,7 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
-    logfile_name = "plne_compacte.txt"
+    logfile_name = "txtFiles/plne_compacte.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)

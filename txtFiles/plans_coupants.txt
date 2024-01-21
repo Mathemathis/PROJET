@@ -1,0 +1,41 @@
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               600
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Reduced MIP has 40 rows, 163 columns, and 443 nonzeros.
+Reduced MIP has 162 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.02 ticks)
+Clique table members: 19.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Root relaxation solution time = 0.00 sec. (0.05 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0     9365.0000     6                      0.0000        7         
+*     0     0      integral     0    15332.5600    15332.5600        7    0.00%
+Elapsed time = 0.23 sec. (3.36 ticks, tree = 0.01 MB, solutions = 1)
+Found incumbent of value 15332.560000 after 0.23 sec. (3.36 ticks)
+
+User cuts applied:  5
+
+Root node processing (before b&c):
+  Real time             =    0.23 sec. (3.34 ticks)
+Sequential b&c:
+  Real time             =    0.00 sec. (0.03 ticks)
+                          ------------
+Total (root+branch&cut) =    0.23 sec. (3.37 ticks)
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 15332.56
+Nombre d'itérations : 10

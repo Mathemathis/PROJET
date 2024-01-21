@@ -50,7 +50,7 @@ function plne_dual(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64,
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
-    logfile_name = "plne_dual.txt"
+    logfile_name = "txtFiles/plne_dual.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
@@ -91,7 +91,7 @@ function check_dual_poids(n::Int64, d2::Int64, p::Vector{Int64}, ph::Vector{Int6
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
-    logfile_name = "check_dual_poids.txt"
+    logfile_name = "txtFiles/check_dual_poids.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
@@ -141,7 +141,7 @@ function check_dual_objective(n::Int64, d1::Int64, d::Dict{Any, Any}, D::Dict{An
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
-    logfile_name = "check_dual_objective.txt"
+    logfile_name = "txtFiles/check_dual_objective.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)

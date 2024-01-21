@@ -22,7 +22,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
     Keys=collect(keys(D))
 
     m = Model(CPLEX.Optimizer)
-    # set_silent(m)
+    #set_silent(m)
     
     set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Limits_CutsFactor", 0)
@@ -147,7 +147,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
         end
     end
 
-    logfile_name = "plans_coupants.txt"
+    logfile_name = "txtFiles/plans_coupants.txt"
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
@@ -168,7 +168,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
         # println("Value x : ", JuMP.value.(x))
         println("Valeur de l’objectif : ", JuMP.objective_value(m))
         println("Nombre d'itérations : ", iter)
-        return JuMP.value.(x), JuMP.value.(a)
+        #return JuMP.value.(x), JuMP.value.(a)
     end
 end
 
