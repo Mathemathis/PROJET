@@ -130,7 +130,7 @@ function plans_coupants(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::I
                     MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
                     # println("Ajout d'une contrainte de type 24 ")
 
-                elseif derniere_solution!=nodes_visited # nodes visited : noeuds dans la solution que l'on regarde
+                elseif derniere_solution!=nodes_visited # nodes visited : noeuds dans la solution que l'on regarde [ALH je ne comprends pas cette partie là]
                     # println("Ajout d'une contrainte de type 25 ")
                     # Contrainte à prouver: elle permet d'enlever de la symmétrie. 
                     # L'hypothèse est que si sum(x*d*(1+D))<= sum(y*d*(1+D)) alors v(x)<=v(y) (avec v(x) la vraie valeure de la solution)
