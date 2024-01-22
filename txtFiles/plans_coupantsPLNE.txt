@@ -1,0 +1,185 @@
+current z* = 0.0
+Ajout d'une contrainte de type 23
+solution SP1 =  33222.0
+Ajout d'une contrainte de type 24
+current z* = 0.0
+Ajout d'une contrainte de type 23
+solution SP1 =  33222.0
+Ajout d'une contrainte de type 24
+current z* = 0.0
+Ajout d'une contrainte de type 23
+solution SP1 =  33222.0
+Ajout d'une contrainte de type 24
+current z* = 0.0
+Ajout d'une contrainte de type 23
+solution SP1 =  13122.6
+Ajout d'une contrainte de type 24
+current z* = 7856.0
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 8837.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12664.33
+current z* = 8837.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9403.070000000003
+solution SP1 =  12664.330000000004
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 9431.33
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.750000000002
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 11070.33
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 9403.07
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 11042.070000000002
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12126.2
+solution SP1 =  14631.56
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+current z* = 12070.75
+solution SP1 =  12664.33
+Ajout d'une contrainte de type 24
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 12664.33
