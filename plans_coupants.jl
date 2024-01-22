@@ -78,22 +78,19 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
             I=1 # on regarde les indices dans l'ordre dans l'ordre des p^hat qui permettent d'augmenter le plus le poids du chemin
             delta_2_val = [0 for i in 1:n] # on stocke les delta^2
 
-            while capa+2<=d2 && I<=n # tant que j'ai encore du budget pour augmenter le poids de mes sommets
-                if a_val[order_ph[I]]>1e-5 # c'est bien un sommet que j'ai sélectionné 
-                    capa+=2 # augmentation du budget
-                    res+=2*ph[order_ph[I]] # augmentation du poids total des sommets
-                    delta_2_val[order_ph[I]]=2 # stockage valeur delta^2
+            while I<=n # exactement même idée que pour les sommets
+                if a_val[order_ph[I]]>1e-5
+                    if capa+2<=d2
+                        capa+=2 # augmentation du budget
+                        res+=2*ph[order_ph[I]] # augmentation du poids total des sommets
+                        delta_2_val[order_ph[I]]=2 # stockage valeur delta^2
+                    else # on augmente avec le budget qu'il nous reste
+                        res+=(d2-capa)*ph[order_ph[I]] 
+                        delta_2_val[order_ph[I]]=d2-capa
+                        I+=n #on sort de la boucle
+                    end
                 end
                 I+=1
-            end
-
-            while I<=n && a_val[order_ph[I]]<1e-5 # on passe les sommets restants non selectionnés
-                I+=1
-            end
-
-            if I<=n # on augmente avec le budget qu'il nous reste
-                res+=(d2-capa)*ph[order_ph[I]] 
-                delta_2_val[order_ph[I]]=d2-capa
             end
         
             if res >= S + 1e-5 # si notre poids est plus grand que S -> ajout de la contrainte
@@ -109,22 +106,20 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
                 capa=0
                 I=1
                 delta_1_val = Dict(key => 0.0 for key in collect(keys(D))) # on initialise tous les delta^1 des arêtes à 0
-                while capa+D[Keys[order_dh[I]]]<=d1 && I<nD # exactement même idée que pour les sommets
+                while I<=nD # exactement même idée que pour les sommets
                     if x_val[Keys[order_dh[I]]]>1e-5
-                        capa+=D[Keys[order_dh[I]]]
-                        res+=d[Keys[order_dh[I]]]*D[Keys[order_dh[I]]]
-                        delta_1_val[Keys[order_dh[I]]]=D[Keys[order_dh[I]]]
+                        if capa+D[Keys[order_dh[I]]]<=d1
+                            capa+=D[Keys[order_dh[I]]]
+                            res+=d[Keys[order_dh[I]]]*D[Keys[order_dh[I]]]
+                            delta_1_val[Keys[order_dh[I]]]=D[Keys[order_dh[I]]]
+                        else
+                            res+=d[Keys[order_dh[I]]]*(d1-capa)
+                            delta_1_val[Keys[order_dh[I]]]=d1-capa
+                            I+=nD
+                        end
                     end
                     I+=1
                 end
-                while I<=nD && x_val[Keys[order_dh[I]]]<1e-5
-                    I+=1
-                end
-                if I<=nD
-                    res+=d[Keys[order_dh[I]]]*(d1-capa)
-                    delta_1_val[Keys[order_dh[I]]]=d1-capa
-                end
-
                 if res >=  z_etoile + 1e-5 # si le coût du chemin est plus grand que la valeur objectif actuelle -> ajout de la contrainte
                     cstr2 = @build_constraint(sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
                     MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
@@ -168,7 +163,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
         # println("Value x : ", JuMP.value.(x))
         println("Valeur de l’objectif : ", JuMP.objective_value(m))
         println("Nombre d'itérations : ", iter)
-        #return JuMP.value.(x), JuMP.value.(a)
+        return JuMP.value.(x), JuMP.value.(a)
     end
 end
 
@@ -278,6 +273,7 @@ function plans_coupantsPLNE(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
 
             if JuMP.objective_value(SP1) >=  z_etoile + 1e-5
                 println("solution SP1 =  ", JuMP.objective_value(SP1))
+                println([(key, delta_1_val[key], D[key], d[key]) for key in collect(keys(D)) if delta_1_val[key]>0.001])
                 cstr2 = @build_constraint(sum(x[i,j]*d[i,j]*(1+delta_1_val[i,j]) for i in 1:n for j in deltap[i]) <= z)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
                 println("Ajout d'une contrainte de type 24")
