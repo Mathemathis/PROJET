@@ -123,7 +123,9 @@ function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
     end
 end
 
-function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any})
+function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any}, p)
+    """Prend une solution réalisable 
+    renvoie le chemin, les indices des sommets empruntés par ordre décroissant de ph et des arêtes empruntées par ordre décroissant de d"""
     deltap=Dict()
     deltam=Dict()
     for i in 1:n
@@ -149,74 +151,128 @@ function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dic
         end
     end
     println("chemin : ", chemin)
-    ind_poids_croissants =sort(chemin, lt = (x, y) -> ph[x] <= ph[y])
-    ind_aretes_croissantes = sort(aretes, lt = (x, y) -> d[x] <= d[y])
-    return(chemin, ind_poids_croissants, ind_aretes_croissantes)
+    i_poids_d =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
+    i_aretes_d = sort(aretes, lt = (x, y) -> d[x] <= d[y], rev = true)
+    poids_h_d = [ph[i] for i in i_poids_d]
+    poids_d = [p[i] for i in i_poids_d]
+
+    aretes_d = [d[i] for i in i_aretes_d]
+    return(chemin, i_poids_d, i_aretes_d, poids_d, poids_h_d, aretes_d)
 end
 
-function getInfoSommets(ind_poids_croissants, p, ph, d2)
-    res=sum([p[i] for i in collect(ind_poids_croissants)]) # somme deterministe
-    println("res init ", res)
-
+function getInfoSommets(i_poids_d, p, ph, d2)
+    """Renvoie le poids des sommets dans le cas robuste et tous les sommets de 1 à i_res sont chargés au maximum
+    i_poids_d : liste des indices des sommets triées par poids decroissant de ph"""
+    res=sum([p[i] for i in collect(i_poids_d)]) # somme deterministe
     capa=0 # budget pour augmenter les delta^2
-    l = length(ind_poids_croissants)
-    ind_res = l +  1# dernier indice à être rempli totalement (indice dans ind_poids_croissants)
+    i_res = 0 # dernier indice à être rempli totalement (indice dans i_poids_croissants)
      
-    for i in reverse(ind_poids_croissants)
+    for i in i_poids_d
         if capa+2<=d2
             capa+=2 # augmentation du budget
             res+=2*ph[i] # augmentation du poids total des sommets
-            ind_res -= 1 # on rempli totatlement ce sommet
-            println("res =", res)
+            i_res += 1 # on rempli totatlement ce sommet
         else 
             res+=(d2-capa)*ph[i]
+            capa = 0
             break
         end
     end
-    println("res final = ", res)
-    return res, ind_res # total des poids max, indice du dernier sommet rempli totalement
+    return res, i_res, capa # total des poids max, indice du dernier sommet rempli totalement
 end
 
-function getInfoArcs(ind_aretes_croissantes, d, D, d1)
-    res=sum([d[i] for i in collect(ind_aretes_croissantes)]) # somme deterministe
+function getInfoArcs(i_aretes_d, d, D, d1)
+    """Renvoie la distance du chemin dans le cas robuste et tous les arcs de 1 à i_res sont chargés au maximum
+    i_aretes_d : liste des indices aretes triées par poids decroissant de d"""
 
+    res=sum([d[i] for i in collect(i_aretes_d)]) # somme deterministe
     capa=0 # budget pour augmenter les delta^2
-    l = length(ind_aretes_croissantes)
-    ind_res = l + 1  # dernier indice à être rempli totalement (indice dans ind_aretes_croissantes)
+    i_res = 0  # dernier indice à être rempli totalement (indice dans i_aretes_croissantes)
     
-    for (i,j) in reverse(ind_aretes_croissantes)
+    for (i,j) in i_aretes_d
         if capa+D[i,j]<=d1
             capa+=D[i,j]
             res+=d[i,j]*D[i,j]
-            ind_res -= 1
+            i_res -= 1
         else
             res+=d[i,j]*(d1-capa)
+            capa = d1
             break
         end
     end
-    return res, ind_res
+    return res, i_res, capa
 end
 
+function voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p)
+    """test si le nouveau voisin est admissible pour les poids des sommets"""
+    
+    nv_poids = sum_poids + p[nv_noeud] - poids_d[i_old_noeud]
+
+    if i_lim < length(i_poids_d) # il y a un noeud juste à droite
+        if i_old_noeud <= i_lim # nv_noeud compte dans le poids
+            nv_poids -= (2*poids_h_d[i_old_noeud]) # on enleve ce poids
+            if ph[nv_noeud] >= poids_h_d[i_lim + 1] # attention peut être placé juste à droite
+                nv_poids += (2*ph[nv_noeud]) # ajout du noeud
+                # a droite de i_lim reste pareil
+            else # on ajoute pas le nv noeud et decalage à droite
+                nv_poids += (2*poids_h_d[i_lim + 1]) # on ajoute la variation du sommet à droite
+                nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # si mini variation précédente
+
+                if i_lim + 2 <= length(i_poids_d)
+                    if  ph[nv_noeud] >= poids_h_d[i_lim + 2]
+                        nv_poids += (ph[nv_noeud]* (d2 - 2 * i_lim))
+                    else
+                        nv_poids += (poids_h_d[i_lim+ 2]* (d2 - 2 * i_lim))
+                    end
+                end
+            end 
+        else  # ancien noeud pas enleve
+            if ph[nv_noeud] > poids_h_d[i_lim] # sinon on ne change rien
+                nv_poids += (2*ph[nv_noeud]) # on sature le noeud
+                nv_poids -= (2*poids_h_d[i_lim]) # on enleve le noeud limite
+                nv_poids +=(poids_h_d[i_lim] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
+                nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
+            else 
+                if ph[nv_noeud] >  poids_h_d[i_lim+1] # il est placé juste à droite
+                    nv_poids +=(ph[nv_noeud] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
+                    nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
+                end
+            end
+        end
+    else
+        nv_poids += (2*ph[nv_noeud]) # on sature le noeud
+    end
+    return(nv_poids)
+end
 
 function main()
     name_instance="20_USA-road-d.NY.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     print("d2 = ", d2)
-    d2 = 1
+    d2 = 7
     timelimit = 30
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
-    chemin, ind_poids_croissants, ind_aretes_croissantes = transformSol(a, n, s, t, ph, d)
-    println("sommets poids_croissants : ", ind_poids_croissants)
-    println("p poids_croissants : ", [p[x] for x in collect(ind_poids_croissants)])
-    println("ph poids_croissants : ", [ph[x] for x in collect(ind_poids_croissants)])
-    println("aretes croissantes : ", ind_aretes_croissantes)
-    println("aretes poids_croissants : ", [d[x] for x in collect(ind_aretes_croissantes)])
-    res_sommets, ind_sommets = getInfoSommets(ind_poids_croissants, p, ph, d2)
-    res_arcs, ind_arcs = getInfoArcs(ind_aretes_croissantes, d, D, d1)
-    println("resultat sommets :", res_sommets)
-    println("indice sommets :", ind_sommets)
+    chemin, i_poids_d, i_aretes_d, poids_d, poids_h_d, aretes_d = transformSol(a, n, s, t, ph, d, p)
+    println("sommets poids_croissants : ", i_poids_d)
+    println("poids decroissants : ", poids_d)
+
+    sum_poids, i_lim, capa_sommets = getInfoSommets(i_poids_d, p, ph, d2)
+    sum_arcs, arc_limite, capa_arcs = getInfoArcs(i_aretes_d, d, D, d1)
+    println("resultat sommets :", sum_poids)
+    println("indice sommets :", i_lim)
+    println("capa = ", capa_sommets)
+    i_old_noeud = 3
+    old_noeud = i_poids_d[i_old_noeud]
+    nv_noeud = 15
+    println("old noeud : p[$old_noeud] = ", p[old_noeud])
+    println("old noeud : ph[$old_noeud] = ", ph[old_noeud])
+
+    println("nv noeud : p[$nv_noeud] = ", p[nv_noeud])
+    println("nv noeud : ph[$nv_noeud] = ", ph[nv_noeud])
+
+    voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p)
 end
 
 
 
-main()
+
