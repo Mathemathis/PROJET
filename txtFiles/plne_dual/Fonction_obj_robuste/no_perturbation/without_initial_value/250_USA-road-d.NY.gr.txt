@@ -1,0 +1,60 @@
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_TimeLimit                               60
+Clique table members: 250.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:   155   Dual objective     =         30334.263333
+Iteration:   359   Dual objective     =         33799.220000
+Root relaxation solution time = 0.02 sec. (36.86 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0    33799.2200    35                  33799.2200      376         
+*     0+    0                        37057.4100    33799.2200             8.79%
+Found incumbent of value 37057.410000 after 0.11 sec. (195.64 ticks)
+      0     0    34293.6607    61    37057.4100      Cuts: 15      443    7.46%
+      0     0    34386.0316    58    37057.4100      Cuts: 33      459    7.21%
+      0     0    34463.2120    56    37057.4100      Cuts: 26      467    7.00%
+      0     0    34591.9852   103    37057.4100      Cuts: 21     1529    6.65%
+      0     0    34591.9852   106    37057.4100      Cuts: 50     1536    6.65%
+      0     0    34591.9852    99    37057.4100      Cuts: 29     1539    6.65%
+      0     0    34591.9852   101    37057.4100      Cuts: 49     1542    6.65%
+Detecting symmetries...
+      0     2    34591.9852   101    37057.4100    34594.9237     1542    6.65%
+Elapsed time = 2.27 sec. (2959.78 ticks, tree = 0.01 MB, solutions = 1)
+      2     4    34747.6380    92    37057.4100    34724.2020     1568    6.30%
+      6     7    36919.8320    62    37057.4100    34724.2020     1857    6.30%
+     16     7    34724.2020    92    37057.4100    34724.2020     1935    6.30%
+     22    11        cutoff          37057.4100    34747.6380     2782    6.23%
+     31    14    35648.1302    88    37057.4100    34747.6380     3031    6.23%
+     45    17        cutoff          37057.4100    34747.6380     4449    6.23%
+     74    19    35863.0223    91    37057.4100    35539.3380     5017    4.10%
+     96    23    37042.1300    14    37057.4100    35987.9600     5388    2.89%
+    132    27    infeasible          37057.4100    36117.7220     5801    2.54%
+    292    21        cutoff          37057.4100    37042.1300     6784    0.04%
+                                                  Flowcuts: 1                  
+Elapsed time = 4.06 sec. (6493.20 ticks, tree = 0.12 MB, solutions = 1)
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 37057.41
+
+Flow cuts applied:  29
+Mixed integer rounding cuts applied:  19
+Lift and project cuts applied:  2
+Gomory fractional cuts applied:  4
+
+Root node processing (before b&c):
+  Real time             =    2.25 sec. (2945.90 ticks)
+Sequential b&c:
+  Real time             =    1.86 sec. (3609.82 ticks)
+                          ------------
+Total (root+branch&cut) =    4.11 sec. (6555.72 ticks)

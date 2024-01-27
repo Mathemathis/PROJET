@@ -1,7 +1,7 @@
 using JuMP
 using CPLEX
 
-function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, timelimit)
+function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, name_instance, is_perturbated, timelimit)
     """Crée une modèle et résoute le problème compact (sans incertitudes)"""
     deltap=Dict()
     deltam=Dict()
@@ -12,6 +12,12 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
     for (i,j) in keys(d)
         push!(deltap[i],j)
         push!(deltam[j],i)
+    end
+
+    if is_perturbated == "Yes"
+        for key in keys(d)
+            d[key]+=rand(1:1000)/100000
+        end
     end
 
     m = Model(CPLEX.Optimizer)
@@ -30,12 +36,16 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
     @constraint(m,  sum(a[i]*p[i] for i in 1:n)<=S)
 
     
-    set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
+    # set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
     set_optimizer_attribute(m, "CPXPARAM_TimeLimit", timelimit)
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
 
-    logfile_name = "txtFiles/plne_compacte.txt"
+    if is_perturbated == "Yes"
+        logfile_name = "txtFiles/plne_compacte/perturbation/$name_instance.txt"
+    else
+        logfile_name = "txtFiles/plne_compacte/no_perturbation/$name_instance.txt"
+    end
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
@@ -58,5 +68,8 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
         # println("Value x : ", JuMP.value.(x))
         println("Value a : ", JuMP.value.(a))
         println("Valeur de l’objectif : ", JuMP.objective_value(m))
+        close(logfile)
+        return JuMP.value.(x), JuMP.value.(a)
     end
+    close(logfile)
 end

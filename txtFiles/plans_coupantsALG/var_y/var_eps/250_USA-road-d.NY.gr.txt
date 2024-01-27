@@ -1,0 +1,150 @@
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               20
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Reduced MIP has 631 rows, 14107 columns, and 44545 nonzeros.
+Reduced MIP has 14106 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.76 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 2910.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    69   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   233   Dual objective     =         26126.000005
+Removing perturbation.
+Root relaxation solution time = 0.00 sec. (21.49 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0    29136.0000     8                  29136.0000      366         
+      0     2    30316.7800     8                  30316.7800      366         
+Elapsed time = 0.81 sec. (262.03 ticks, tree = 0.01 MB, solutions = 0)
+     38     4    infeasible                        30316.7800     5848         
+     74     4    infeasible                        30316.7800    11930         
+    107     5    30316.7800     8                  30316.7800    18396         
+    137     5    30316.7800     8                  30316.7800    24531         
+    170     4    infeasible                        30316.7800    30595         
+    204     4    infeasible                        30316.7800    35555         
+    240     4    infeasible                        30316.7800    39412         
+    289    25    30316.7800     8                  30316.7800    41831         
+    335    25    30316.7800     8                  30316.7800    48360         
+    537    35    infeasible                        30316.7800    62572         
+Elapsed time = 2.70 sec. (3431.40 ticks, tree = 0.31 MB, solutions = 0)
+    723    51    infeasible                        30316.7800    75114         
+    976    98    infeasible                        30316.7800    86454         
+   1169    99    30316.7800     3                  30316.7800   111653         
+   1332    98    infeasible                        30316.7800   134170         
+   1474   126    50201.3800     6                  30316.7800   151318         
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 668 columns.
+Reduced MIP has 631 rows, 13439 columns, and 43210 nonzeros.
+Reduced MIP has 13438 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (2.05 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 64 columns.
+Reduced MIP has 631 rows, 13375 columns, and 43085 nonzeros.
+Reduced MIP has 13374 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (2.90 ticks)
+Represolve time = 0.22 sec. (275.03 ticks)
+Dual steepest-edge pricing selected.
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          2578.000000
+Iteration:   108   Dual objective     =         25111.000000
+Iteration:   212   Dual objective     =         28803.000000
+
+Iteration log . . .
+Iteration:     1   Dual objective     =         30316.780000
+   1521     2    30316.7800    10                  30316.7800   156598         
+   1610    86    30423.3175    51                  30395.7800   156756         
+   1665   121    33252.7800    11                  30474.7800   157122         
+   1800   156    44759.2000    27                  30474.7800   157323         
+                                                UserPurge1: 1                  
+   1951   195    44759.2000    26                  30474.7800   157482         
+Elapsed time = 8.80 sec. (13455.40 ticks, tree = 1.73 MB, solutions = 0)
+   2103   283    44759.2000    26                  30474.7800   157626         
+   2235   412    44759.2000    26                  30474.7800   157758         
+   2341   495    45823.0000     8                  30474.7800   157932         
+   2445   599    45823.0000     8                  30474.7800   158036         
+
+Performing restart 2
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 199 columns.
+Reduced MIP has 631 rows, 13176 columns, and 42666 nonzeros.
+Reduced MIP has 13175 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.94 ticks)
+Tried aggregator 0 times.
+Reduced MIP has 631 rows, 13176 columns, and 42666 nonzeros.
+Reduced MIP has 13175 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.93 ticks)
+Represolve time = 0.09 sec. (105.43 ticks)
+Dual steepest-edge pricing selected.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          2578.000000
+Iteration:    83   Dual objective     =          2578.000000
+Perturbation started.
+Iteration:   101   Dual objective     =          2578.000000
+Iteration:   286   Dual objective     =         28115.780003
+Removing perturbation.
+
+Iteration log . . .
+Iteration:     1   Dual objective     =         30316.780000
+   2535     2    30316.7800     8                  30474.7800   158525         
+   2635    95    42239.9545    32                  30474.7800   159408         
+                                                UserPurge1: 15                  
+   2775   235    43622.3945    28                  30474.7800   159549         
+                                                UserPurge1: 13                  
+   2927   386    43622.3945    27                  30474.7800   159701         
+   3095   554    43622.3945    27                  30474.7800   159869         
+   3275   734    43622.3945    27                  30474.7800   160049         
+Elapsed time = 15.84 sec. (23556.74 ticks, tree = 7.25 MB, solutions = 0)
+   3440   899    43622.3945    27                  30474.7800   160214         
+   3611  1070    43622.3945    27                  30474.7800   160385         
+   3770  1229    43622.3945    27                  30474.7800   160544         
+   3932  1391    43622.3945    27                  30474.7800   160706         
+   4103  1562    43622.3945    27                  30474.7800   160877         
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 1
+37057.409999999996 29136.0
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),1] + y[(870, 0.14),1] + y[(883, 0.07),1] + y[(1116, 0.18),2] + y[(1818, 0.3),1] + y[(1880, 0.31),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(2936, 0.48),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] - 0.07692307692307693 x[32,183] - 0.07692307692307693 x[62,32] - 0.07692307692307693 x[71,108] - 0.07692307692307693 x[89,226] - 0.07692307692307693 x[108,240] - 0.07692307692307693 x[147,164] - 0.07692307692307693 x[152,204] - 0.07692307692307693 x[164,89] - 0.07692307692307693 x[183,71] - 0.07692307692307693 x[199,152] - 0.07692307692307693 x[204,239] - 0.07692307692307693 x[226,62] - 0.07692307692307693 x[240,199], MathOptInterface.LessThan{Float64}(11.0))
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 2
+37057.409999999996 30316.78
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),1] + y[(870, 0.14),1] + y[(883, 0.07),1] + y[(1116, 0.18),2] + y[(1818, 0.3),1] + y[(1880, 0.31),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(2936, 0.48),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] - 0.07692307692307693 x[18,243] - 0.07692307692307693 x[24,18] - 0.07692307692307693 x[54,24] - 0.07692307692307693 x[89,54] - 0.07692307692307693 x[108,240] - 0.07692307692307693 x[140,89] - 0.07692307692307693 x[147,140] - 0.07692307692307693 x[187,108] - 0.07692307692307693 x[199,228] - 0.07692307692307693 x[204,239] - 0.07692307692307693 x[228,204] - 0.07692307692307693 x[240,199] - 0.07692307692307693 x[243,187], MathOptInterface.LessThan{Float64}(11.0))
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 3
+37057.409999999996 30316.78
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),1] + y[(870, 0.14),1] + y[(883, 0.07),1] + y[(1116, 0.18),2] + y[(1818, 0.3),1] + y[(1880, 0.31),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(2936, 0.48),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] - 0.07692307692307693 x[3,71] - 0.07692307692307693 x[44,54] - 0.07692307692307693 x[54,62] - 0.07692307692307693 x[62,95] - 0.07692307692307693 x[71,108] - 0.07692307692307693 x[75,204] - 0.07692307692307693 x[82,44] - 0.07692307692307693 x[95,3] - 0.07692307692307693 x[108,240] - 0.07692307692307693 x[147,82] - 0.07692307692307693 x[199,75] - 0.07692307692307693 x[204,239] - 0.07692307692307693 x[240,199], MathOptInterface.LessThan{Float64}(11.0))
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 4
+50551.270000000004 40289.38
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(1699, 0.14),1] + y[(1945, 0.16),1] + y[(2319, 0.38),1] + y[(2500, 0.21),3] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(3360, 0.28),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] + y[(7252, 0.6),1] - 0.08333333333333333 x[7,98] - 0.08333333333333333 x[16,7] - 0.08333333333333333 x[44,16] - 0.08333333333333333 x[52,228] - 0.08333333333333333 x[82,220] - 0.08333333333333333 x[98,208] - 0.08333333333333333 x[147,232] - 0.08333333333333333 x[204,239] - 0.08333333333333333 x[208,52] - 0.08333333333333333 x[220,82] - 0.08333333333333333 x[228,204] - 0.08333333333333333 x[232,44], MathOptInterface.LessThan{Float64}(9.0))
+Ajout d'une contrainte de type 24 5
+54139.869999999995 43178.0
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(1945, 0.16),1] + y[(2319, 0.38),1] + y[(2500, 0.21),3] + y[(2780, 0.23),1] + y[(3360, 0.28),1] + y[(3618, 0.3),1] + y[(4066, 0.34),1] + y[(4489, 0.37),1] + y[(5849, 0.48),1] + y[(7252, 0.6),1] - 0.08333333333333333 x[16,17] - 0.08333333333333333 x[17,42] - 0.08333333333333333 x[42,249] - 0.08333333333333333 x[52,246] - 0.08333333333333333 x[82,220] - 0.08333333333333333 x[147,232] - 0.08333333333333333 x[151,239] - 0.08333333333333333 x[155,16] - 0.08333333333333333 x[220,82] - 0.08333333333333333 x[232,155] - 0.08333333333333333 x[246,151] - 0.08333333333333333 x[249,52], MathOptInterface.LessThan{Float64}(9.0))
+NO_SOLUTION
+TIME_LIMIT

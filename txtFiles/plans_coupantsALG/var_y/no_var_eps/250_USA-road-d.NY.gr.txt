@@ -1,0 +1,98 @@
+
+User cuts applied:  6
+
+Root node processing (before b&c):
+  Real time             =    0.48 sec. (174.07 ticks)
+Sequential b&c:
+  Real time             =    3.94 sec. (7480.34 ticks)
+                          ------------
+Total (root+branch&cut) =    4.42 sec. (7654.41 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               120
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Reduced MIP has 631 rows, 12907 columns, and 44545 nonzeros.
+Reduced MIP has 12906 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.69 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 2629.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    69   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   235   Dual objective     =         25810.000006
+Removing perturbation.
+Root relaxation solution time = 0.02 sec. (20.77 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+      0     0    29136.0000    10                  29136.0000      372         
+*     0+    0                        37057.4100    29136.0000            21.38%
+Found incumbent of value 37057.410000 after 0.13 sec. (140.17 ticks)
+      0     2    30316.7800    10    37057.4100    30316.7800      372   18.19%
+Elapsed time = 0.14 sec. (173.97 ticks, tree = 0.01 MB, solutions = 1)
+    100    97    30316.7800     9    37057.4100    30316.7800      543   18.19%
+    235   230    30316.7800     9    37057.4100    30316.7800      678   18.19%
+    361   351    30316.7800     9    37057.4100    30316.7800      804   18.19%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 813 columns.
+Reduced MIP has 631 rows, 12094 columns, and 41771 nonzeros.
+Reduced MIP has 12093 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.96 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 6 rows and 79 columns.
+Reduced MIP has 625 rows, 12015 columns, and 41577 nonzeros.
+Reduced MIP has 12014 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.01 sec. (2.76 ticks)
+Represolve time = 0.25 sec. (425.24 ticks)
+Dual steepest-edge pricing selected.
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          2578.000000
+Iteration:    89   Dual objective     =         24614.000000
+Iteration:   177   Dual objective     =         28324.000000
+    517     1    30316.7800     9    37057.4100    30316.7800     1191   18.19%
+    542     3    30316.7800     8    37057.4100    30316.7800     1335   18.19%
+    567     3    30316.7800     8    37057.4100    30316.7800     1463   18.19%
+    600     3    30316.7800     8    37057.4100    30316.7800     1566   18.19%
+    647     5    30316.7800     8    37057.4100    30316.7800     1646   18.19%
+    707     6    30316.7800     8    37057.4100    30316.7800     1700   18.19%
+    851    47    36924.7800     2    37057.4100    31004.7800     2228   16.33%
+Elapsed time = 2.30 sec. (4151.08 ticks, tree = 0.44 MB, solutions = 1)
+    903    58    34411.9764    40    37057.4100    31432.7800     4638   15.18%
+                                                UserPurge1: 3                  
+    976    50    34479.9808    59    37057.4100    33664.7800     9379    9.16%
+   1052    17        cutoff          37057.4100    34883.1300    13295    5.87%
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 0
+37057.409999999996 29136.0
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),1] + y[(870, 0.14),1] + y[(883, 0.07),1] + y[(1116, 0.18),2] + y[(1818, 0.3),1] + y[(1880, 0.31),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(2936, 0.48),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] - 0.07692307692307693 x[32,183] - 0.07692307692307693 x[54,105] - 0.07692307692307693 x[71,108] - 0.07692307692307693 x[105,32] - 0.07692307692307693 x[108,240] - 0.07692307692307693 x[140,211] - 0.07692307692307693 x[147,140] - 0.07692307692307693 x[152,204] - 0.07692307692307693 x[183,71] - 0.07692307692307693 x[199,152] - 0.07692307692307693 x[204,239] - 0.07692307692307693 x[211,54] - 0.07692307692307693 x[240,199], MathOptInterface.LessThan{Float64}(11.0))
+Ajout d'une contrainte de type 24 1
+37057.409999999996 30316.779999999995
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),1] + y[(870, 0.14),1] + y[(883, 0.07),1] + y[(1116, 0.18),2] + y[(1818, 0.3),1] + y[(1880, 0.31),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(2936, 0.48),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] - 0.07692307692307693 x[18,243] - 0.07692307692307693 x[24,18] - 0.07692307692307693 x[44,54] - 0.07692307692307693 x[54,24] - 0.07692307692307693 x[75,204] - 0.07692307692307693 x[108,240] - 0.07692307692307693 x[147,232] - 0.07692307692307693 x[187,108] - 0.07692307692307693 x[199,75] - 0.07692307692307693 x[204,239] - 0.07692307692307693 x[232,44] - 0.07692307692307693 x[240,199] - 0.07692307692307693 x[243,187], MathOptInterface.LessThan{Float64}(11.0))
+Ajout d'une contrainte de type 23
+Ajout d'une contrainte de type 24 2
+46239.270000000004 35977.38
+ScalarConstraint{AffExpr, MathOptInterface.LessThan{Float64}}(y[(344, 0.06),2] + y[(1699, 0.14),1] + y[(1945, 0.16),1] + y[(2319, 0.38),1] + y[(2500, 0.21),1] + y[(2578, 0.21),1] + y[(2780, 0.23),1] + y[(3360, 0.28),1] + y[(3618, 0.3),1] + y[(6697, 0.55),1] + y[(7252, 0.6),1] - 0.08333333333333333 x[28,228] - 0.08333333333333333 x[44,219] - 0.08333333333333333 x[68,98] - 0.08333333333333333 x[78,28] - 0.08333333333333333 x[82,44] - 0.08333333333333333 x[98,78] - 0.08333333333333333 x[108,240] - 0.08333333333333333 x[147,82] - 0.08333333333333333 x[204,239] - 0.08333333333333333 x[219,68] - 0.08333333333333333 x[228,204] - 0.08333333333333333 x[240,108], MathOptInterface.LessThan{Float64}(10.0))
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 37057.409999999996
+Nombre d'itérations : 9
