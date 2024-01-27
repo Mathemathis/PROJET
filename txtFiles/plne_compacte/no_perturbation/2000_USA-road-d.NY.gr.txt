@@ -1,0 +1,58 @@
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_TimeLimit                               60
+Tried aggregator 1 time.
+MIP Presolve eliminated 2 rows and 6 columns.
+Reduced MIP has 3999 rows, 147600 columns, and 440795 nonzeros.
+Reduced MIP has 147600 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.87 sec. (326.32 ticks)
+Found incumbent of value 68368.000000 after 5.37 sec. (1306.88 ticks)
+Tried aggregator 1 time.
+Detecting symmetries...
+Reduced MIP has 3999 rows, 147600 columns, and 440795 nonzeros.
+Reduced MIP has 147600 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 23.21 sec. (8418.77 ticks)
+Dual steepest-edge pricing selected.
+Probing time = 0.14 sec. (33.95 ticks)
+Clique table members: 10654.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Tried aggregator 1 time.
+No LP presolve or aggregator reductions.
+Presolve time = 0.19 sec. (50.18 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          4088.000000
+Iteration:   214   Dual objective     =         24587.000000
+Iteration:   383   Dual objective     =         30917.000000
+Iteration:   553   Dual objective     =         35396.000000
+Iteration:   713   Dual objective     =         38780.000000
+Iteration:   874   Dual objective     =         40474.000000
+Iteration:  1035   Dual objective     =         43515.000000
+Iteration:  1203   Dual objective     =         46267.000000
+Iteration:  1350   Dual objective     =         49022.082353
+Root relaxation solution time = 0.95 sec. (666.19 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        68368.0000        0.0000           100.00%
+Found incumbent of value 68368.000000 after 30.16 sec. (10557.87 ticks)
+      0     0    49232.4167    20    68368.0000    49232.4167     1360   27.99%
+      0     0    49232.4167    50    68368.0000     Covers: 1     1362   27.99%
+      0     0    49232.4167    45    68368.0000     Covers: 1     1363   27.99%
+      0     0    49232.4167    72    68368.0000     Covers: 1     1364   27.99%
+*     0+    0                        49331.0000    49232.4167             0.20%
+Found incumbent of value 49331.000000 after 56.63 sec. (23237.81 ticks)
+
+Cover cuts applied:  2
+
+Root node processing (before b&c):
+  Real time             =  121.33 sec. (80597.01 ticks)
+Sequential b&c:
+  Real time             =    0.00 sec. (0.00 ticks)
+                          ------------
+Total (root+branch&cut) =  121.33 sec. (80597.01 ticks)
