@@ -279,3 +279,10 @@ MIP Presolve eliminated 1 rows and 2 columns.
 Reduced MIP has 58 rows, 152 columns, and 443 nonzeros.
 Reduced MIP has 132 binaries, 0 generals, 0 SOSs, and 0 indicators.
 Presolve time = 0.00 sec. (0.41 ticks)
+
+Root node processing (before b&c):
+  Real time             =    0.01 sec. (1.90 ticks)
+Sequential b&c:
+  Real time             =    0.00 sec. (0.00 ticks)
+                          ------------
+Total (root+branch&cut) =    0.01 sec. (1.90 ticks)

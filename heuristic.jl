@@ -23,6 +23,7 @@ function plne_compacte_no_print(n::Int64, s::Int64, t::Int64, S::Int64, p::Vecto
     end
 
     m = Model(CPLEX.Optimizer)
+    set_silent(m)
 
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
     # @variable(m, a[1:n]>=0)
@@ -77,6 +78,7 @@ function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
     end
 
     m = Model(CPLEX.Optimizer)
+    set_silent(m)
 
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
     @variable(m, a[1:n], Bin)
@@ -121,7 +123,7 @@ function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
     end
 end
 
-function transformSol(x, a, n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64, p::Vector{Int64}, ph::Vector{Int64}, d::Dict{Any, Any}, D::Dict{Any, Any})
+function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any})
     deltap=Dict()
     deltam=Dict()
     for i in 1:n
@@ -133,37 +135,88 @@ function transformSol(x, a, n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
         push!(deltam[j],i)
     end
     chemin = [s]
+    aretes = []
     current_node=s
     while current_node!=t
-        print("current_node : ", current_node, " ")
+        println("current_node : ", current_node, " ")
         for j in collect(deltap[current_node])
             if a[j]>= 1 - 1e-5
-                current_node = j
                 push!(chemin, j)
+                push!(aretes, (current_node, j))
+                current_node = j
                 break
             end
         end
     end
     println("chemin : ", chemin)
-    poids_croissants =sort(chemin, lt = (x, y) -> p[x] <= p[y])
-    println("sommets poids_croissants : ", poids_croissants)
-    println("poids poids_croissants : ", [p[x] for x in collect(poids_croissants)])
-    return(chemin, poids_croissants)
+    ind_poids_croissants =sort(chemin, lt = (x, y) -> ph[x] <= ph[y])
+    ind_aretes_croissantes = sort(aretes, lt = (x, y) -> d[x] <= d[y])
+    return(chemin, ind_poids_croissants, ind_aretes_croissantes)
 end
 
+function getInfoSommets(ind_poids_croissants, p, ph, d2)
+    res=sum([p[i] for i in collect(ind_poids_croissants)]) # somme deterministe
+    println("res init ", res)
+
+    capa=0 # budget pour augmenter les delta^2
+    l = length(ind_poids_croissants)
+    ind_res = l +  1# dernier indice à être rempli totalement (indice dans ind_poids_croissants)
+     
+    for i in reverse(ind_poids_croissants)
+        if capa+2<=d2
+            capa+=2 # augmentation du budget
+            res+=2*ph[i] # augmentation du poids total des sommets
+            ind_res -= 1 # on rempli totatlement ce sommet
+            println("res =", res)
+        else 
+            res+=(d2-capa)*ph[i]
+            break
+        end
+    end
+    println("res final = ", res)
+    return res, ind_res # total des poids max, indice du dernier sommet rempli totalement
+end
+
+function getInfoArcs(ind_aretes_croissantes, d, D, d1)
+    res=sum([d[i] for i in collect(ind_aretes_croissantes)]) # somme deterministe
+
+    capa=0 # budget pour augmenter les delta^2
+    l = length(ind_aretes_croissantes)
+    ind_res = l + 1  # dernier indice à être rempli totalement (indice dans ind_aretes_croissantes)
+    
+    for (i,j) in reverse(ind_aretes_croissantes)
+        if capa+D[i,j]<=d1
+            capa+=D[i,j]
+            res+=d[i,j]*D[i,j]
+            ind_res -= 1
+        else
+            res+=d[i,j]*(d1-capa)
+            break
+        end
+    end
+    return res, ind_res
+end
 
 
 function main()
-    println("test")
     name_instance="20_USA-road-d.NY.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    print("d2 = ", d2)
+    d2 = 1
     timelimit = 30
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
-    chemin, poids_croissants = transformSol(x, a, n, s, t, S, d1, d2, p, ph, d, D)
-    println("sommets poids_croissants : ", poids_croissants)
-    println("poids poids_croissants : ", [p[x] for x in collect(poids_croissants)])
+    chemin, ind_poids_croissants, ind_aretes_croissantes = transformSol(a, n, s, t, ph, d)
+    println("sommets poids_croissants : ", ind_poids_croissants)
+    println("p poids_croissants : ", [p[x] for x in collect(ind_poids_croissants)])
+    println("ph poids_croissants : ", [ph[x] for x in collect(ind_poids_croissants)])
+    println("aretes croissantes : ", ind_aretes_croissantes)
+    println("aretes poids_croissants : ", [d[x] for x in collect(ind_aretes_croissantes)])
+    res_sommets, ind_sommets = getInfoSommets(ind_poids_croissants, p, ph, d2)
+    res_arcs, ind_arcs = getInfoArcs(ind_aretes_croissantes, d, D, d1)
+    println("resultat sommets :", res_sommets)
+    println("indice sommets :", ind_sommets)
 end
 
 
-println("test2")
+
 main()
