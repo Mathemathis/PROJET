@@ -263,7 +263,6 @@ function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph
                     println("nv_noeud admissible ? ", isAdmissible(chemin, nv_noeud, chemin[i], d2, p, ph, deltap, S))
                     println("nv distances ? ", nvDist(chemin, nv_noeud, chemin[i], d1, d, D))
                     return(chemin[i], nv_noeud)
-                   
                 end
             end
         end
