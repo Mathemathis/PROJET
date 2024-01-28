@@ -3,18 +3,8 @@ using CPLEX
 include("PLNE_compacte.jl")
 include("parsing.jl")
 
-function plne_compacte_no_print(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, name_instance, is_perturbated, timelimit)
+function plneCompacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, name_instance, is_perturbated, timelimit, deltap, deltam)
     """Crée un modèle et résout le problème compact (sans incertitudes)"""
-    deltap=Dict()
-    deltam=Dict()
-    for i in 1:n
-        deltap[i]=[]
-        deltam[i]=[]
-    end
-    for (i,j) in keys(d)
-        push!(deltap[i],j)
-        push!(deltam[j],i)
-    end
 
     if is_perturbated == "Yes"
         for key in keys(d)
@@ -26,7 +16,6 @@ function plne_compacte_no_print(n::Int64, s::Int64, t::Int64, S::Int64, p::Vecto
     set_silent(m)
 
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
-    # @variable(m, a[1:n]>=0)
     @variable(m, a[1:n], Bin)
 
     @constraint(m,  [i in 1:n; i!=s && i!=t], sum(x[i,j] for j in deltap[i]) - sum(x[j,i] for j in deltam[i])==0)
@@ -35,15 +24,12 @@ function plne_compacte_no_print(n::Int64, s::Int64, t::Int64, S::Int64, p::Vecto
 
     @constraint(m,  [i in 1:n; i!=t], sum(x[i,j] for j in deltap[i])==a[i])
     @constraint(m,  a[t]==1)
-
     @constraint(m,  sum(a[i]*p[i] for i in 1:n)<=S)
 
-    
     # set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
     set_optimizer_attribute(m, "CPXPARAM_TimeLimit", timelimit)
     set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
-
 
     @objective(m, Min, sum(x[i,j]*d[i,j] for i in 1:n for j in deltap[i]))
 
@@ -51,31 +37,15 @@ function plne_compacte_no_print(n::Int64, s::Int64, t::Int64, S::Int64, p::Vecto
     optimize!(m)
 
     feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
-    isOptimal = termination_status(m) == MOI.OPTIMAL
-
-    println(primal_status(m))
-    println(termination_status(m))
 
     if feasibleSolutionFound
-        # Récupération des valeurs d’une variable 
-        # println("Value x : ", JuMP.value.(x))
         return JuMP.value.(x), JuMP.value.(a)
     end
 end
 
-function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
-    """Crée un modèle et trouve un chemin minimisant le poids robuste sur les sommets
+function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
+    """Donnne une solution initiale qui respecte la contrainte robuste pour les sommets
     retourne les valeurs de x et a"""
-    deltap=Dict()
-    deltam=Dict()
-    for i in 1:n
-        deltap[i]=[]
-        deltam[i]=[]
-    end
-    for (i,j) in keys(d)
-        push!(deltap[i],j)
-        push!(deltam[j],i)
-    end
 
     m = Model(CPLEX.Optimizer)
     set_silent(m)
@@ -100,7 +70,7 @@ function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
     @objective(m, Min, 0)
 
     # solution de départ
-    initial_values=plne_compacte_no_print(n, s, t, S, p, d, name_instance, "No", 60)
+    initial_values=plneCompacte(n, s, t, S, p, d, name_instance, "No", 60, deltap, deltam)
     JuMP.set_start_value.(x, initial_values[1])
     JuMP.set_start_value.(a, initial_values[2])
     
@@ -116,31 +86,17 @@ function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
 
     if feasibleSolutionFound
         # Récupération des valeurs d’une variable 
-        # println("Value x : ", JuMP.value.(x))
-        println("Value a : ", JuMP.value.(a))
-        println("Valeur de l’objectif : ", JuMP.objective_value(m))
         return JuMP.value.(x), JuMP.value.(a)
     end
 end
 
-function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any}, p)
-    """Prend une solution réalisable 
+function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any}, p, deltap, deltam)
+    """Prend une solution réalisable  avec la valeur de a
     renvoie le chemin, les indices des sommets empruntés par ordre décroissant de ph et des arêtes empruntées par ordre décroissant de d"""
-    deltap=Dict()
-    deltam=Dict()
-    for i in 1:n
-        deltap[i]=[]
-        deltam[i]=[]
-    end
-    for (i,j) in keys(d)
-        push!(deltap[i],j)
-        push!(deltam[j],i)
-    end
-    chemin = [s]
+    chemin = [s] # construction du chemin et des aretes
     aretes = []
     current_node=s
     while current_node!=t
-        println("current_node : ", current_node, " ")
         for j in collect(deltap[current_node])
             if a[j]>= 1 - 1e-5
                 push!(chemin, j)
@@ -150,24 +106,23 @@ function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dic
             end
         end
     end
-    println("chemin : ", chemin)
-    i_poids_d =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
-    i_aretes_d = sort(aretes, lt = (x, y) -> d[x] <= d[y], rev = true)
-    poids_h_d = [ph[i] for i in i_poids_d]
-    poids_d = [p[i] for i in i_poids_d]
+    i_p_dec =sort(chemin, lt = (x, y) -> ph[x] >= ph[y])
+    #i_aretes_d = sort(aretes, lt = (x, y) -> d[x] >= d[y])
+    ph_dec = [ph[i] for i in i_p_dec]
+    p_dec = [p[i] for i in i_p_dec]
 
-    aretes_d = [d[i] for i in i_aretes_d]
-    return(chemin, i_poids_d, i_aretes_d, poids_d, poids_h_d, aretes_d)
+    #aretes_d = [d[i] for i in i_aretes_d]
+    return(chemin, i_p_dec, p_dec, ph_dec)
 end
 
-function getInfoSommets(i_poids_d, p, ph, d2)
+function getInfoSommets(i_p_dec, p, ph, d2)
     """Renvoie le poids des sommets dans le cas robuste et tous les sommets de 1 à i_res sont chargés au maximum
-    i_poids_d : liste des indices des sommets triées par poids decroissant de ph"""
-    res=sum([p[i] for i in collect(i_poids_d)]) # somme deterministe
+    i_p_dec : liste des indices des sommets triées par poids decroissant de ph"""
+    res=sum([p[i] for i in collect(i_p_dec)]) # somme deterministe
     capa=0 # budget pour augmenter les delta^2
     i_res = 0 # dernier indice à être rempli totalement (indice dans i_poids_croissants)
      
-    for i in i_poids_d
+    for i in i_p_dec
         if capa+2<=d2
             capa+=2 # augmentation du budget
             res+=2*ph[i] # augmentation du poids total des sommets
@@ -178,7 +133,7 @@ function getInfoSommets(i_poids_d, p, ph, d2)
             break
         end
     end
-    return res, i_res, capa # total des poids max, indice du dernier sommet rempli totalement
+    return res, i_res # total des poids max, indice du dernier sommet rempli totalement
 end
 
 function getInfoArcs(i_aretes_d, d, D, d1)
@@ -200,41 +155,38 @@ function getInfoArcs(i_aretes_d, d, D, d1)
             break
         end
     end
-    return res, i_res, capa
+    return res, i_res
 end
 
-function voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
+function nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
     """test si le nouveau voisin est admissible pour les poids des sommets"""
-    
-    nv_poids = sum_poids + p[nv_noeud] - poids_d[i_old_noeud]
-
-    
+    nv_poids = sum_poids + p[nv_noeud] - p_dec[i_old_noeud]
     if i_old_noeud <= i_lim # nv_noeud compte dans le poids
-        nv_poids -= (2*poids_h_d[i_old_noeud]) # on enleve ce poids
-        if ((i_lim == longueur) || (ph[nv_noeud] >= poids_h_d[i_lim + 1])) # attention peut être placé juste à droite
+        nv_poids -= (2*ph_dec[i_old_noeud]) # on enleve ce poids
+        if ((i_lim == longueur) || (ph[nv_noeud] >= ph_dec[i_lim + 1])) # attention peut être placé juste à droite
             nv_poids += (2*ph[nv_noeud]) # ajout du noeud
             # a droite de i_lim reste pareil
         else # on ajoute pas le nv noeud et decalage à droite
-            nv_poids +=  + 2*poids_h_d[(i_lim + 1)] 
-            nv_poids -= poids_h_d[(i_lim +1)]* (d2 - 2 * i_lim)  # on ajoute la variation du sommet à droite
+            nv_poids +=  + 2*ph_dec[(i_lim + 1)] 
+            nv_poids -= ph_dec[(i_lim +1)]* (d2 - 2 * i_lim)  # on ajoute la variation du sommet à droite
             if i_lim + 2 <= longueur
-                if  ph[nv_noeud] >= poids_h_d[(i_lim + 2)]
+                if  ph[nv_noeud] >= ph_dec[(i_lim + 2)]
                     nv_poids += (ph[nv_noeud]* (d2 - 2 * i_lim))
                 else
-                    nv_poids += (poids_h_d[i_lim+ 2]* (d2 - 2 * i_lim))
+                    nv_poids += (ph_dec[i_lim+ 2]* (d2 - 2 * i_lim))
                 end
             end
         end 
     else  # ancien noeud pas enleve
-        if ((i_lim > 0) && (ph[nv_noeud] > poids_h_d[i_lim])) # sinon on ne change rien
+        if ((i_lim > 0) && (ph[nv_noeud] > ph_dec[i_lim])) # sinon on ne change rien
             nv_poids += (2*ph[nv_noeud]) # on sature le noeud
-            nv_poids -= (2*poids_h_d[i_lim]) # on enleve le noeud limite
-            nv_poids +=(poids_h_d[i_lim] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
-            nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
+            nv_poids -= (2*ph_dec[i_lim]) # on enleve le noeud limite
+            nv_poids +=(ph_dec[i_lim] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
+            nv_poids -= (ph_dec[(i_lim +1)]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
         else 
-            if ph[nv_noeud] >  poids_h_d[i_lim+1] # il est placé juste à droite
-                nv_poids += ph[nv_noeud] * (d2 - 2 * i_lim)
-                nv_poids -= poids_h_d[(i_lim +1)]* (d2 - 2 * i_lim)  # saturation partielle du noeud limite
+            if ((i_old_noeud == i_lim+1) || (ph[nv_noeud] >  ph_dec[(i_lim+1)])) # il est placé juste à droite
+                nv_poids += (ph[nv_noeud] * (d2 - 2 * i_lim))
+                nv_poids -= (ph_dec[(i_lim +1)]* (d2 - 2 * i_lim))  # saturation partielle du noeud limite
             end
         end
     end
@@ -242,17 +194,19 @@ function voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeu
 end
 
 function checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
+    """Maniere longue de calculer le poids d'une chemin pour verifier les calculs"""
     current_node = chemin[1]
     for i in 1:length(chemin) # calcul du nouveau chemin
         if chemin[i] == old_noeud
             chemin[i] = nv_noeud
         end
     end
-    i_poids_d =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
-    return(getInfoSommets(i_poids_d, p, ph, d2))
+    i_p_dec =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
+    return(getInfoSommets(i_p_dec, p, ph, d2))
 end
 
 function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
+    """Calcul de la nouvelle distance des aretes d'un chemin"""
     aretes = []
     current_node = chemin[1]
     for i in 2:length(chemin) # calcul du nouveau chemin
@@ -262,17 +216,38 @@ function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
         push!(aretes, (current_node, chemin[i]))
         current_node = chemin[i]
     end
-    println("aretes = ", aretes)
     i_aretes_d =sort(aretes, lt = (x, y) -> d[x] <= d[y], rev = true)
     return(getInfoArcs(i_aretes_d, d, D, d1))
 end
 
+function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, current_sol)
+    found = false
+    i = 2
+    while (i <= longueur-1) && (!found)
+        droite = chemin[i-1]
+        gauche = chemin[i+1]
+        sommets_admissibles = intersect(deltap[droite], deltam[gauche])
+        println("sommets admissibles = ", sommets_admissibles)
+        for nv_noeud in collect(sommets_admissibles)
+            nv_poids = nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
+            if nv_poids <= S
+                prinln("on a trouve un sommet qui respecte la contrainte des poids")
+                if nvDist(chemin, nv_noeud, old_noeud, d1, d, D) < current_sol
+                    println("on a trouve une solution ameliorante")
+                    found = true
+                    return(chemin[i], nv_noeud)
+                end
+            end
+        end
+        i += 1
+    end
+end
 
 function main()
-
     name_instance="20_USA-road-d.NY.gr"
-
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+
+    # init delta p delta m
     deltap=Dict()
     deltam=Dict()
     for i in 1:n
@@ -283,48 +258,25 @@ function main()
         push!(deltap[i],j)
         push!(deltam[j],i)
     end
-    print("d2 = ", d2)
-    d2 = 1
+
     timelimit = 30
-    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
-    chemin, i_poids_d, i_aretes_d, poids_d, poids_h_d, aretes_d = transformSol(a, n, s, t, ph, d, p)
+    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
+    chemin, i_p_dec, p_dec, ph_dec = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
+
     longueur = length(chemin)
-    println("sommets poids_croissants : ", i_poids_d)
-    println("poids decroissants : ", poids_d)
+    sum_poids, i_lim = getInfoSommets(i_p_dec, p, ph, d2)
+    #sum_arcs, arc_limite = getInfoArcs(i_aretes_d, d, D, d1)
 
-    sum_poids, i_lim, capa_sommets = getInfoSommets(i_poids_d, p, ph, d2)
-    sum_arcs, arc_limite, capa_arcs = getInfoArcs(i_aretes_d, d, D, d1)
-    println("resultat sommets :", sum_poids)
-    println("indice sommets :", i_lim)
-    println("capa = ", capa_sommets)
-    i_old_noeud = 2
-    old_noeud = chemin[i_old_noeud]
+    i_old_noeud = 4
+    old_noeud = i_p_dec[i_old_noeud]
     nv_noeud = 8
-    println("old noeud : p[$old_noeud] = ", p[old_noeud])
-    println("old noeud : ph[$old_noeud] = ", ph[old_noeud])
-    p[nv_noeud] = 24
-    ph[nv_noeud] = 3
-    D[2,8] = 1
-    println("nv noeud : p[$nv_noeud] = ", p[nv_noeud])
-    println("nv noeud : ph[$nv_noeud] = ", ph[nv_noeud])
 
-    nv_poids = voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
-    poids_ref, _, _ = checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
-    nv_dist, _, _ = nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
+    nv_poids = nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
+    poids_ref, _=  checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
+    nv_dist, _= nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
+
     println("methode rapide = ", nv_poids)
     println("methode lente = ", poids_ref)   
-    println("ancienne distance = ", sum_arcs) 
-    println("nv_dist = ", nv_dist)
-
-    println("D[2, 14] = ", D[2,14])
-    println("d[2, 14] = ", d[2,14])
-    println("D[2, 8] = ", D[2,8])
-    println("D[2, 8] = ", d[2,8])
-    println("D[14, 17] = ", D[14,17])
-    println("d[14, 17] = ", d[14,17])
-    println("D[8, 17] = ", D[8,17])
-    println("d[8, 17] = ", d[8,17])
-
 end
 
 
