@@ -197,9 +197,8 @@ function nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_no
 end
 
 function checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
-    """Maniere longue de calculer le poids d'une chemin pour verifier les calculs"""
+    """Maniere longue de calculer le poids d'un chemin voisin pour verifier les calculs"""
     nv_chemin = copy(chemin)
-    current_node = nv_chemin[1]
     for i in 1:length(chemin) # calcul du nouveau chemin
         if nv_chemin[i] == old_noeud
             nv_chemin[i] = nv_noeud
@@ -207,6 +206,23 @@ function checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
     end
     i_p_dec =sort(nv_chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
     return(getInfoSommets(i_p_dec, p, ph, d2))
+end
+
+function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S)
+    nv_chemin = copy(chemin)
+    for i in 1:length(chemin) # calcul du nouveau chemin
+        if nv_chemin[i] == old_noeud
+            nv_chemin[i] = nv_noeud
+        end
+    end
+    for i in 1:(length(nv_chemin)-1)
+        if !(in(nv_chemin[i+1], deltap[nv_chemin[i]]))
+            return(false) # on ne peut pas tracer le chemin
+        end
+    end 
+    i_p_dec =sort(nv_chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
+    res_poids, _ = getInfoSommets(i_p_dec, p, ph, d2)
+    return(res_poids <= S) # poids 
 end
 
 function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
@@ -244,7 +260,10 @@ function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph
                 if nvDist(chemin, nv_noeud, chemin[i], d1, d, D) < current_sol
                     println("on a trouve une solution ameliorante")
                     found = true
+                    println("nv_noeud admissible ? ", isAdmissible(chemin, nv_noeud, chemin[i], d2, p, ph, deltap, S))
+                    println("nv distances ? ", nvDist(chemin, nv_noeud, chemin[i], d1, d, D))
                     return(chemin[i], nv_noeud)
+                   
                 end
             end
         end
