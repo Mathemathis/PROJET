@@ -13,7 +13,7 @@ function plneCompacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, 
     end
 
     m = Model(CPLEX.Optimizer)
-    set_silent(m)
+    #set_silent(m)
 
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
     @variable(m, a[1:n], Bin)
@@ -96,23 +96,26 @@ function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dic
     chemin = [s] # construction du chemin et des aretes
     aretes = []
     current_node=s
+    a[s] = 0
     while current_node!=t
+        println("chemin = ", chemin)
         for j in collect(deltap[current_node])
             if a[j]>= 1 - 1e-5
                 push!(chemin, j)
                 push!(aretes, (current_node, j))
                 current_node = j
+                a[j] = 0
                 break
             end
         end
     end
     i_p_dec =sort(chemin, lt = (x, y) -> ph[x] >= ph[y])
-    #i_aretes_d = sort(aretes, lt = (x, y) -> d[x] >= d[y])
+    i_aretes_d = sort(aretes, lt = (x, y) -> d[x] >= d[y])
     ph_dec = [ph[i] for i in i_p_dec]
     p_dec = [p[i] for i in i_p_dec]
 
     #aretes_d = [d[i] for i in i_aretes_d]
-    return(chemin, i_p_dec, p_dec, ph_dec)
+    return(chemin, i_p_dec, p_dec, ph_dec, i_aretes_d)
 end
 
 function getInfoSommets(i_p_dec, p, ph, d2)
@@ -195,29 +198,32 @@ end
 
 function checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
     """Maniere longue de calculer le poids d'une chemin pour verifier les calculs"""
-    current_node = chemin[1]
+    nv_chemin = copy(chemin)
+    current_node = nv_chemin[1]
     for i in 1:length(chemin) # calcul du nouveau chemin
-        if chemin[i] == old_noeud
-            chemin[i] = nv_noeud
+        if nv_chemin[i] == old_noeud
+            nv_chemin[i] = nv_noeud
         end
     end
-    i_p_dec =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
+    i_p_dec =sort(nv_chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
     return(getInfoSommets(i_p_dec, p, ph, d2))
 end
 
 function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
     """Calcul de la nouvelle distance des aretes d'un chemin"""
     aretes = []
-    current_node = chemin[1]
-    for i in 2:length(chemin) # calcul du nouveau chemin
-        if chemin[i] == old_noeud
-            chemin[i] = nv_noeud
+    nv_chemin = copy(chemin)
+    current_node = nv_chemin[1]
+    for i in 2:length(nv_chemin) # calcul du nouveau chemin
+        if nv_chemin[i] == old_noeud
+            nv_chemin[i] = nv_noeud
         end
-        push!(aretes, (current_node, chemin[i]))
-        current_node = chemin[i]
+        push!(aretes, (current_node, nv_chemin[i]))
+        current_node = nv_chemin[i]
     end
     i_aretes_d =sort(aretes, lt = (x, y) -> d[x] <= d[y], rev = true)
-    return(getInfoArcs(i_aretes_d, d, D, d1))
+    sum_arcs, _  = getInfoArcs(i_aretes_d, d, D, d1)
+    return(sum_arcs)
 end
 
 function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, current_sol)
@@ -226,13 +232,16 @@ function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph
     while (i <= longueur-1) && (!found)
         droite = chemin[i-1]
         gauche = chemin[i+1]
+        i_old_noeud = findfirst(x -> x == chemin[i], i_p_dec)
+        println("old_noeud = ", chemin[i])
         sommets_admissibles = intersect(deltap[droite], deltam[gauche])
+        sommets_admissibles = filter(x -> x != chemin[i], sommets_admissibles)
         println("sommets admissibles = ", sommets_admissibles)
         for nv_noeud in collect(sommets_admissibles)
             nv_poids = nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
             if nv_poids <= S
-                prinln("on a trouve un sommet qui respecte la contrainte des poids")
-                if nvDist(chemin, nv_noeud, old_noeud, d1, d, D) < current_sol
+                println("on a trouve un sommet qui respecte la contrainte des poids")
+                if nvDist(chemin, nv_noeud, chemin[i], d1, d, D) < current_sol
                     println("on a trouve une solution ameliorante")
                     found = true
                     return(chemin[i], nv_noeud)
@@ -241,10 +250,11 @@ function VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph
         end
         i += 1
     end
+    return(-1, -1)
 end
 
 function main()
-    name_instance="20_USA-road-d.NY.gr"
+    name_instance="100_USA-road-d.BAY.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
 
     # init delta p delta m
@@ -261,22 +271,16 @@ function main()
 
     timelimit = 30
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
-    chemin, i_p_dec, p_dec, ph_dec = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
+    println("solution est construite")
+    chemin, i_p_dec, p_dec, ph_dec, i_aretes_d  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
 
     longueur = length(chemin)
     sum_poids, i_lim = getInfoSommets(i_p_dec, p, ph, d2)
-    #sum_arcs, arc_limite = getInfoArcs(i_aretes_d, d, D, d1)
+    current_sol, arc_limite = getInfoArcs(i_aretes_d, d, D, d1)
+    println("current_sol  = ", current_sol)
+    println("chemin = ", chemin)
 
-    i_old_noeud = 4
-    old_noeud = i_p_dec[i_old_noeud]
-    nv_noeud = 8
-
-    nv_poids = nvResPoids(i_p_dec, p_dec, ph_dec, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
-    poids_ref, _=  checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
-    nv_dist, _= nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
-
-    println("methode rapide = ", nv_poids)
-    println("methode lente = ", poids_ref)   
+    old_noeud, nv_noeud = VoisAmeliorant(chemin, i_p_dec, p_dec, ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, current_sol) 
 end
 
 
