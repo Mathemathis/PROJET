@@ -203,56 +203,92 @@ function getInfoArcs(i_aretes_d, d, D, d1)
     return res, i_res, capa
 end
 
-function voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p)
+function voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
     """test si le nouveau voisin est admissible pour les poids des sommets"""
     
     nv_poids = sum_poids + p[nv_noeud] - poids_d[i_old_noeud]
 
-    if i_lim < length(i_poids_d) # il y a un noeud juste à droite
-        if i_old_noeud <= i_lim # nv_noeud compte dans le poids
-            nv_poids -= (2*poids_h_d[i_old_noeud]) # on enleve ce poids
-            if ph[nv_noeud] >= poids_h_d[i_lim + 1] # attention peut être placé juste à droite
-                nv_poids += (2*ph[nv_noeud]) # ajout du noeud
-                # a droite de i_lim reste pareil
-            else # on ajoute pas le nv noeud et decalage à droite
-                nv_poids += (2*poids_h_d[i_lim + 1]) # on ajoute la variation du sommet à droite
-                nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # si mini variation précédente
-
-                if i_lim + 2 <= length(i_poids_d)
-                    if  ph[nv_noeud] >= poids_h_d[i_lim + 2]
-                        nv_poids += (ph[nv_noeud]* (d2 - 2 * i_lim))
-                    else
-                        nv_poids += (poids_h_d[i_lim+ 2]* (d2 - 2 * i_lim))
-                    end
-                end
-            end 
-        else  # ancien noeud pas enleve
-            if ph[nv_noeud] > poids_h_d[i_lim] # sinon on ne change rien
-                nv_poids += (2*ph[nv_noeud]) # on sature le noeud
-                nv_poids -= (2*poids_h_d[i_lim]) # on enleve le noeud limite
-                nv_poids +=(poids_h_d[i_lim] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
-                nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
-            else 
-                if ph[nv_noeud] >  poids_h_d[i_lim+1] # il est placé juste à droite
-                    nv_poids +=(ph[nv_noeud] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
-                    nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
+    
+    if i_old_noeud <= i_lim # nv_noeud compte dans le poids
+        nv_poids -= (2*poids_h_d[i_old_noeud]) # on enleve ce poids
+        if ((i_lim == longueur) || (ph[nv_noeud] >= poids_h_d[i_lim + 1])) # attention peut être placé juste à droite
+            nv_poids += (2*ph[nv_noeud]) # ajout du noeud
+            # a droite de i_lim reste pareil
+        else # on ajoute pas le nv noeud et decalage à droite
+            nv_poids +=  + 2*poids_h_d[(i_lim + 1)] 
+            nv_poids -= poids_h_d[(i_lim +1)]* (d2 - 2 * i_lim)  # on ajoute la variation du sommet à droite
+            if i_lim + 2 <= longueur
+                if  ph[nv_noeud] >= poids_h_d[(i_lim + 2)]
+                    nv_poids += (ph[nv_noeud]* (d2 - 2 * i_lim))
+                else
+                    nv_poids += (poids_h_d[i_lim+ 2]* (d2 - 2 * i_lim))
                 end
             end
+        end 
+    else  # ancien noeud pas enleve
+        if ((i_lim > 0) && (ph[nv_noeud] > poids_h_d[i_lim])) # sinon on ne change rien
+            nv_poids += (2*ph[nv_noeud]) # on sature le noeud
+            nv_poids -= (2*poids_h_d[i_lim]) # on enleve le noeud limite
+            nv_poids +=(poids_h_d[i_lim] * (d2 - 2 * i_lim)) # saturation partielle du noeud limite
+            nv_poids -= (poids_h_d[i_lim +1]* (d2 - 2 * i_lim)) # le sommet à droite de la limite n'est plus saturé
+        else 
+            if ph[nv_noeud] >  poids_h_d[i_lim+1] # il est placé juste à droite
+                nv_poids += ph[nv_noeud] * (d2 - 2 * i_lim)
+                nv_poids -= poids_h_d[(i_lim +1)]* (d2 - 2 * i_lim)  # saturation partielle du noeud limite
+            end
         end
-    else
-        nv_poids += (2*ph[nv_noeud]) # on sature le noeud
     end
     return(nv_poids)
 end
 
+function checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
+    current_node = chemin[1]
+    for i in 1:length(chemin) # calcul du nouveau chemin
+        if chemin[i] == old_noeud
+            chemin[i] = nv_noeud
+        end
+    end
+    i_poids_d =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
+    return(getInfoSommets(i_poids_d, p, ph, d2))
+end
+
+function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
+    aretes = []
+    current_node = chemin[1]
+    for i in 2:length(chemin) # calcul du nouveau chemin
+        if chemin[i] == old_noeud
+            chemin[i] = nv_noeud
+        end
+        push!(aretes, (current_node, chemin[i]))
+        current_node = chemin[i]
+    end
+    println("aretes = ", aretes)
+    i_aretes_d =sort(aretes, lt = (x, y) -> d[x] <= d[y], rev = true)
+    return(getInfoArcs(i_aretes_d, d, D, d1))
+end
+
+
 function main()
+
     name_instance="20_USA-road-d.NY.gr"
+
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    deltap=Dict()
+    deltam=Dict()
+    for i in 1:n
+        deltap[i]=[]
+        deltam[i]=[]
+    end
+    for (i,j) in keys(d)
+        push!(deltap[i],j)
+        push!(deltam[j],i)
+    end
     print("d2 = ", d2)
-    d2 = 7
+    d2 = 1
     timelimit = 30
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance)
     chemin, i_poids_d, i_aretes_d, poids_d, poids_h_d, aretes_d = transformSol(a, n, s, t, ph, d, p)
+    longueur = length(chemin)
     println("sommets poids_croissants : ", i_poids_d)
     println("poids decroissants : ", poids_d)
 
@@ -261,16 +297,34 @@ function main()
     println("resultat sommets :", sum_poids)
     println("indice sommets :", i_lim)
     println("capa = ", capa_sommets)
-    i_old_noeud = 3
-    old_noeud = i_poids_d[i_old_noeud]
-    nv_noeud = 15
+    i_old_noeud = 2
+    old_noeud = chemin[i_old_noeud]
+    nv_noeud = 8
     println("old noeud : p[$old_noeud] = ", p[old_noeud])
     println("old noeud : ph[$old_noeud] = ", ph[old_noeud])
-
+    p[nv_noeud] = 24
+    ph[nv_noeud] = 3
+    D[2,8] = 1
     println("nv noeud : p[$nv_noeud] = ", p[nv_noeud])
     println("nv noeud : ph[$nv_noeud] = ", ph[nv_noeud])
 
-    voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p)
+    nv_poids = voisAdmissible(i_poids_d, poids_d, poids_h_d, sum_poids, i_lim, nv_noeud, i_old_noeud, d2, ph, p, longueur)
+    poids_ref, _, _ = checkChemin(chemin, nv_noeud, old_noeud, d2, p, ph)
+    nv_dist, _, _ = nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
+    println("methode rapide = ", nv_poids)
+    println("methode lente = ", poids_ref)   
+    println("ancienne distance = ", sum_arcs) 
+    println("nv_dist = ", nv_dist)
+
+    println("D[2, 14] = ", D[2,14])
+    println("d[2, 14] = ", d[2,14])
+    println("D[2, 8] = ", D[2,8])
+    println("D[2, 8] = ", d[2,8])
+    println("D[14, 17] = ", D[14,17])
+    println("d[14, 17] = ", d[14,17])
+    println("D[8, 17] = ", D[8,17])
+    println("d[8, 17] = ", d[8,17])
+
 end
 
 
