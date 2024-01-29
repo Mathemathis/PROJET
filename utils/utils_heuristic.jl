@@ -96,3 +96,18 @@ function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S)
         return(false)
     end
 end
+
+function initDelta(d, n)
+    # init delta p delta m
+    deltap=Dict()
+    deltam=Dict()
+    for i in 1:n
+        deltap[i]=[]
+        deltam[i]=[]
+    end
+    for (i,j) in keys(d)
+        push!(deltap[i],j)
+        push!(deltam[j],i)
+    end
+    return(deltap, deltam)
+end
