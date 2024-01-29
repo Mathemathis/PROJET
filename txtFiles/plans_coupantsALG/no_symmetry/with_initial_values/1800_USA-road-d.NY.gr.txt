@@ -1,0 +1,93 @@
+
+User cuts applied:  9
+
+Root node processing (before b&c):
+  Real time             =    5.97 sec. (3797.58 ticks)
+Sequential b&c:
+  Real time             =   23.59 sec. (27305.00 ticks)
+                          ------------
+Total (root+branch&cut) =   29.56 sec. (31102.58 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               30
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 69098.2500.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 69098.2500.
+Reduced MIP has 4084 rows, 133602 columns, and 648384 nonzeros.
+Reduced MIP has 133601 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.03 sec. (21.35 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 4838.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   351   Dual objective     =             0.000000
+Iteration:   635   Dual objective     =             0.000001
+Iteration:   931   Dual objective     =             0.000001
+Iteration:  1219   Dual objective     =             0.000002
+Iteration:  1514   Dual objective     =             0.000004
+Iteration:  1824   Dual objective     =             0.000010
+Iteration:  2179   Dual objective     =         28078.000002
+Iteration:  2528   Dual objective     =         33698.000006
+Iteration:  2794   Dual objective     =         35441.474120
+Iteration:  3003   Dual objective     =         37943.000006
+Iteration:  3316   Dual objective     =         42473.622485
+Iteration:  3627   Dual objective     =         45546.395358
+Iteration:  3899   Dual objective     =         49359.046526
+Removing perturbation.
+Root relaxation solution time = 1.48 sec. (1386.12 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        69098.2500        0.0000           100.00%
+Found incumbent of value 69098.250000 after 3.75 sec. (1686.18 ticks)
+      0     0    51962.0808   125    69098.2500    51962.0808     4148   24.80%
+      0     2    55684.2634   117    69098.2500    55694.0071     4171   19.40%
+Elapsed time = 9.47 sec. (4741.81 ticks, tree = 0.01 MB, solutions = 1)
+      2     2    55694.0071   117    69098.2500    56578.1200     4180   18.12%
+     11     3    59275.9874   117    69098.2500    57733.4466     4641   16.45%
+     20     5    59395.3188   116    69098.2500    59395.3188     4761   14.04%
+     30     6    59470.2754   116    69098.2500    59395.3188     4855   14.04%
+     38    11    60027.3555   112    69098.2500    59395.3188     5305   14.04%
+     50    13    60101.1053   112    69098.2500    59395.3188     5370   14.04%
+     52    14    63215.7424   113    69098.2500    59395.3188     5630   14.04%
+     56    17    63222.8763   113    69098.2500    59395.3188     5841   14.04%
+     70    20        cutoff          69098.2500    59395.3188     5920   14.04%
+    110    33    63936.2278   113    69098.2500    59395.3188     6045   14.04%
+Elapsed time = 14.44 sec. (10374.27 ticks, tree = 2.56 MB, solutions = 1)
+    139    49    64777.5425   115    69098.2500    59395.3188     6611   14.04%
+    154    61    64777.5425   115    69098.2500    59395.3188     7074   14.04%
+    176    71    67556.9000    44    69098.2500    59395.3188     7801   14.04%
+    202    83    infeasible          69098.2500    59395.3188     7826   14.04%
+                                                UserPurge1: 6                  
+    238   112    62034.2949   105    69098.2500    59497.7327     8156   13.89%
+    270   144    64453.6285   126    69098.2500    59497.7327     8333   13.89%
+    300   156    65485.2202   114    69098.2500    59497.7327     8380   13.89%
+    320   167    65914.3836   114    69098.2500    59497.7327     8400   13.89%
+    344   183    67809.1986   113    69098.2500    59497.7327     8464   13.89%
+    390   210    62077.0969   116    69098.2500    59497.7327     8595   13.89%
+Elapsed time = 23.75 sec. (20761.54 ticks, tree = 16.85 MB, solutions = 1)
+    424   233    65522.6199   120    69098.2500    59497.7327     8775   13.89%
+    474   264    67957.5240   119    69098.2500    59497.7327     8884   13.89%
+    515   298    67957.5240   114    69098.2500    59497.7327     9048   13.89%
+    544   325    68252.8584   114    69098.2500    59497.7327     9191   13.89%
+    574   350    61456.5705   106    69098.2500    59497.7327     9587   13.89%
+    587   361    61536.7451   103    69098.2500    59497.7327     9686   13.89%
+Advanced basis not built.
+FEASIBLE_POINT
+TIME_LIMIT
+Valeur de l’objectif : 69098.25000000001
+Nombre d'itérations : 4

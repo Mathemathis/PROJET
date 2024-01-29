@@ -1,0 +1,111 @@
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               300
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 82213.4900.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 82213.4900.
+Reduced MIP has 1348 rows, 18160 columns, and 81105 nonzeros.
+Reduced MIP has 18159 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (2.77 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 2971.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   244   Dual objective     =             0.000002
+Iteration:   417   Dual objective     =             0.000014
+Iteration:   603   Dual objective     =         35961.000005
+Removing perturbation.
+Root relaxation solution time = 0.03 sec. (51.02 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        82213.4900        0.0000           100.00%
+Found incumbent of value 82213.490000 after 1.78 sec. (91.13 ticks)
+      0     0    39721.0000    28    82213.4900    39721.0000      661   51.69%
+*     0+    0                        48093.4400    39721.0000            17.41%
+Found incumbent of value 48093.440000 after 1.95 sec. (259.79 ticks)
+      0     2    42835.9616    30    48093.4400    42863.0672      684   10.88%
+Elapsed time = 2.00 sec. (324.11 ticks, tree = 0.01 MB, solutions = 2)
+     44     6    44124.7583    30    48093.4400    43779.7379      909    8.97%
+     80    26    44367.6200    31    48093.4400    43779.7379     1025    8.97%
+    138    59    45312.3000    28    48093.4400    43779.7379     1218    8.97%
+    180    76    45966.7379    56    48093.4400    43779.7379     1311    8.97%
+                                                UserPurge1: 6                  
+    253   100        cutoff          48093.4400    44326.1370     1424    7.83%
+    321    75    infeasible          48093.4400    46058.2474     1511    4.23%
+    388   126    47107.2350    29    48093.4400    46058.2474     1612    4.23%
+    467   191    47150.7200    19    48093.4400    46058.2474     1691    4.23%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 3531 columns.
+Reduced MIP has 1348 rows, 14629 columns, and 66979 nonzeros.
+Reduced MIP has 14628 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (4.91 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 13 rows and 184 columns.
+Reduced MIP has 1335 rows, 14445 columns, and 66443 nonzeros.
+Reduced MIP has 14444 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (3.91 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 103 columns.
+Reduced MIP has 1335 rows, 14342 columns, and 66134 nonzeros.
+Reduced MIP has 14341 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (2.56 ticks)
+Represolve time = 1.06 sec. (2016.79 ticks)
+Dual steepest-edge pricing selected.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          4867.000000
+Perturbation started.
+Iteration:   101   Dual objective     =          4867.000000
+Iteration:   311   Dual objective     =         27917.561757
+Iteration:   506   Dual objective     =         39236.710004
+Iteration:   638   Dual objective     =         43307.264626
+Removing perturbation.
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 6693 columns.
+Reduced MIP has 1335 rows, 7649 columns, and 34588 nonzeros.
+Reduced MIP has 7648 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (3.98 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 12 rows and 281 columns.
+Reduced MIP has 1323 rows, 7368 columns, and 33292 nonzeros.
+Reduced MIP has 7367 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (2.10 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 1 columns.
+Reduced MIP has 1323 rows, 7367 columns, and 33289 nonzeros.
+Reduced MIP has 7366 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.30 ticks)
+Represolve time = 0.17 sec. (282.00 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          4867.000000
+Iteration:   109   Dual objective     =         24152.000000
+Iteration:   246   Dual objective     =         39721.000000
+    487     2    44996.2013    51    48093.4400    46058.2474     2805    4.23%
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 48093.439999999995
+Nombre d'itérations : 7

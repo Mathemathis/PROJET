@@ -1,0 +1,126 @@
+
+User cuts applied:  11
+
+Root node processing (before b&c):
+  Real time             =    5.95 sec. (3797.59 ticks)
+Sequential b&c:
+  Real time             =   53.56 sec. (56872.92 ticks)
+                          ------------
+Total (root+branch&cut) =   59.51 sec. (60670.51 ticks)
+Version identifier: 22.1.0.0 | 2022-03-09 | 1a383f8ce
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               30
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 72803.6900.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 72803.6900.
+Reduced MIP has 3554 rows, 116087 columns, and 560376 nonzeros.
+Reduced MIP has 116086 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (18.49 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 3954.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   396   Dual objective     =             0.000001
+Iteration:   708   Dual objective     =             0.000002
+Iteration:   990   Dual objective     =             0.000003
+Iteration:  1299   Dual objective     =             0.000005
+Iteration:  1632   Dual objective     =             0.000009
+Iteration:  1972   Dual objective     =             0.000014
+Iteration:  2325   Dual objective     =             0.000026
+Iteration:  2656   Dual objective     =             0.000062
+Iteration:  3058   Dual objective     =         36166.000007
+Iteration:  3449   Dual objective     =         44787.000010
+Iteration:  3843   Dual objective     =         52816.000011
+Iteration:  4165   Dual objective     =         55634.000011
+Iteration:  4510   Dual objective     =         59753.000011
+Removing perturbation.
+Root relaxation solution time = 0.64 sec. (866.99 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        72803.6900        0.0000           100.00%
+Found incumbent of value 72803.690000 after 2.16 sec. (1127.66 ticks)
+      0     0    60038.0000    47    72803.6900    60038.0000     4603   17.53%
+      0     2    60567.8571   100    72803.6900    60567.8571     4626   16.81%
+Elapsed time = 6.06 sec. (3868.65 ticks, tree = 0.01 MB, solutions = 1)
+      5     3    60585.6291   100    72803.6900    60585.6291     4719   16.78%
+     13     7    60638.3017   100    72803.6900    60606.6323     4780   16.75%
+     25    11    60696.2616   100    72803.6900    60606.6323     4945   16.75%
+     30    12    60734.7676   100    72803.6900    60606.6323     5102   16.75%
+     34    14    infeasible          72803.6900    60606.6323     5248   16.75%
+     40    17        cutoff          72803.6900    60606.6323     6369   16.75%
+     50    21    60985.6002    87    72803.6900    60606.6323     6594   16.75%
+     60    27    61096.6265    87    72803.6900    60606.6323     6831   16.75%
+     72    33        cutoff          72803.6900    60606.6323     7213   16.75%
+     94    47    61460.2336    76    72803.6900    60606.6323     7526   16.75%
+Elapsed time = 9.58 sec. (7846.84 ticks, tree = 2.57 MB, solutions = 1)
+    100    53    61497.3840    76    72803.6900    60606.6323     7532   16.75%
+    110    55    61748.2883    98    72803.6900    60606.6323     9598   16.75%
+    140    82    61958.7118    60    72803.6900    60606.6323    10142   16.75%
+    189   118    63160.1133    41    72803.6900    60606.6323    10702   16.75%
+    220   147    63622.1850    41    72803.6900    60606.6323    10819   16.75%
+    279   187    65323.1550    40    72803.6900    60606.6323    11531   16.75%
+    310   213    65928.5736    79    72803.6900    60606.6323    11890   16.75%
+    354   252    66709.3700    38    72803.6900    60606.6323    12304   16.75%
+    400   293    66709.3700    38    72803.6900    60606.6323    12351   16.75%
+    462   346    66709.3700    36    72803.6900    60606.6323    12413   16.75%
+Elapsed time = 19.36 sec. (18326.48 ticks, tree = 22.46 MB, solutions = 1)
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 1852 columns.
+Reduced MIP has 3554 rows, 114235 columns, and 554817 nonzeros.
+Reduced MIP has 114234 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.03 sec. (21.06 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 1 rows and 187 columns.
+Reduced MIP has 3553 rows, 114048 columns, and 554256 nonzeros.
+Reduced MIP has 114047 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.03 sec. (30.92 ticks)
+Represolve time = 6.13 sec. (8173.04 ticks)
+Dual steepest-edge pricing selected.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          4849.000000
+Perturbation started.
+Iteration:   101   Dual objective     =          4849.000000
+Iteration:   350   Dual objective     =          4849.000000
+Iteration:   601   Dual objective     =          4849.000001
+Iteration:   878   Dual objective     =          4849.000001
+Iteration:  1152   Dual objective     =          4849.000002
+Iteration:  1460   Dual objective     =          4849.000003
+Iteration:  1762   Dual objective     =          4849.000005
+Iteration:  2056   Dual objective     =          4849.000007
+Iteration:  2378   Dual objective     =          4849.000011
+Iteration:  2728   Dual objective     =          4849.000023
+Iteration:  3170   Dual objective     =          4849.000213
+Iteration:  3567   Dual objective     =         34082.000007
+Iteration:  3989   Dual objective     =         44773.000006
+Iteration:  4389   Dual objective     =         52329.000007
+Iteration:  4771   Dual objective     =         58696.000005
+Iteration:  5108   Dual objective     =         60038.000009
+Iteration:  5375   Dual objective     =         60288.181825
+Iteration:  5642   Dual objective     =         60437.986983
+Iteration:  5894   Dual objective     =         60572.373015
+Removing perturbation.
+FEASIBLE_POINT
+TIME_LIMIT
+Valeur de l’objectif : 72803.68999999999
+Nombre d'itérations : 4

@@ -42,3 +42,121 @@ function read_file(file)
         return n, s, t, S, d1, d2, p, ph, d, D
     end
 end
+
+function djikstra(n, s, d)
+    deltap=Dict()
+    deltam=Dict()
+    for i in 1:n
+        deltap[i]=[]
+        deltam[i]=[]
+    end
+    for (i,j) in keys(d)
+        # println(i,j)
+        push!(deltap[i],j)
+        push!(deltam[j],i)
+    end
+    infini=500000 
+    distance=[infini for i in 1:n]
+    distance[s]=0
+    Q=[i for i in 1:n]
+    while Q!=[]
+        mini=infini
+        sommet=-1
+        index_min=0
+        for (index_j,j) in enumerate(Q)
+            if distance[j]<mini
+                mini = distance[j]
+                sommet=j
+                index_min=index_j
+            end
+        end
+        if index_min==0
+            Q=[]
+        else
+            deleteat!(Q, index_min)
+            for k in deltap[sommet]
+                if distance[k]>distance[sommet]+d[sommet,k]
+                    distance[k]=distance[sommet]+d[sommet,k]
+                end
+            end
+        end
+    end
+    return distance
+end
+
+function simplify_instance(name_instance, borne_sup, initial_values)
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    initial_x=Dict(key  => initial_values[1][key] for key in keys(d))
+    initial_a=[initial_values[2][i] for i in 1:n]
+    progress=true
+    while progress
+        distance_s=djikstra(n, s, d)
+        distance_t=djikstra(n, t, d)
+        distance_tot=[distance_s[i]+distance_t[i] for i in 1:n]
+        new_set=[i for i in 1:n if distance_tot[i]<borne_sup]
+        link_new_set=[findfirst(item -> item==i, new_set) for i in 1:n]
+        initial_x=Dict((link_new_set[key[1]], link_new_set[key[2]])  => initial_x[key] for key in keys(d) if distance_s[key[1]]+d[key]+distance_t[key[2]]<borne_sup && distance_tot[key[1]]<borne_sup && distance_tot[key[2]]<borne_sup)
+        D=Dict((link_new_set[key[1]], link_new_set[key[2]]) => D[key] for key in keys(d) if distance_s[key[1]]+d[key]+distance_t[key[2]]<borne_sup && distance_tot[key[1]]<borne_sup && distance_tot[key[2]]<borne_sup)
+        d=Dict((link_new_set[key[1]], link_new_set[key[2]])  => d[key] for key in keys(d) if distance_s[key[1]]+d[key]+distance_t[key[2]]<borne_sup && distance_tot[key[1]]<borne_sup && distance_tot[key[2]]<borne_sup)
+        p=[p[i] for i in 1:n if distance_tot[i]<borne_sup]
+        ph=[ph[i] for i in 1:n if distance_tot[i]<borne_sup]
+        initial_a=[initial_a[i] for i in 1:n if distance_tot[i]<borne_sup]
+        s=link_new_set[s]
+        t=link_new_set[t]
+        if n==size(new_set)[1]
+            progress=false
+        else
+            n=size(new_set)[1]
+        end
+    end
+    return  n, s, t, S, d1, d2, p, ph, d, D, [initial_x, initial_a]
+end
+
+function calcul_d_D_k_set(p, d, D,S)
+    d_D=[(d[key], D[key]) for key in collect(keys(D))]
+    count_element=Dict(d_D .=> 0)
+    min_p=minimum(p)
+    for element in d_D
+        if count_element[element]<min(S/min_p, 100000/element[1])
+            count_element[element] += 1
+        end
+    end
+    d_D_set=sort([key for key in collect(keys(count_element))], lt = (x, y) -> (x[1] < y[1]) || (x[1] == y[1] && x[2] < y[2]))
+    A_d_D_set=Dict()
+    for d_D in d_D_set
+        A_d_D_set[d_D]=[]
+    end
+    for key in collect(keys(D))
+        push!(A_d_D_set[d[key], D[key]], key)
+    end
+    A_d_D_set
+    return d_D_set , count_element, A_d_D_set
+end
+
+function calcul_p_ph_k_set(p, ph, S)
+    p_ph=[(p[i], ph[i]) for i in 1:size(p)[1]]
+    count_element_p=Dict(p .=> 0)
+    count_element_ph=Dict(ph .=> 0)
+
+    for element in p_ph
+        if count_element_p[element[1]]<S/element[1]
+            count_element_p[element[1]] += 1
+            count_element_ph[element[2]] += 1
+        end
+    end
+    p_set=sort([key for key in collect(keys(count_element_p))], lt = (x, y) -> (x < y))
+    ph_set=sort([key for key in collect(keys(count_element_ph))], lt = (x, y) -> (x < y))
+    A_p_set=Dict()
+    for p_i in p_set
+        A_p_set[p_i]=[]
+    end
+    A_ph_set=Dict()
+    for ph_i in ph_set
+        A_ph_set[ph_i]=[]
+    end
+    for i in 1:size(p)[1]
+        push!(A_p_set[p[i]], i)
+        push!(A_ph_set[ph[i]], i)
+    end
+    return p_set, ph_set, count_element_p, count_element_ph, A_p_set, A_ph_set
+end
