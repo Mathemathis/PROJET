@@ -240,10 +240,6 @@ end
 
 function main()
     #name_instance="100_USA-road-d.BAY.gr"
-    name_instance="1600_USA-road-d.COL.gr"
-    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
-    deltap, deltam = initDelta(d, n)
-    timelimit = 30
-    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
-    #voisinages(name_instance)
+    name_instance="600_USA-road-d.COL.gr"
+    voisinages(name_instance)
 end
