@@ -180,7 +180,6 @@ function VoisAmeliorant(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, d2, p
 end
 
 function deplacement(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs, longueur, i_lim, d1, d2, p, ph, d, D, old_noeud, nv_noeud)
-<<<<<<< HEAD
     """on enleve old noeud du chemin et on met nv_noeud, retourne les informations"""
     # i_lim, longueur restent égaux
     i_old_noeud = i_to_i_ph_dec[old_noeud]
@@ -222,9 +221,6 @@ function voisinages(name_instance)
             chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs = deplacement(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs, longueur, i_lim, d1, d2, p, ph, d, D, old_noeud, nv_noeud)
         end
     end
-=======
-    
->>>>>>> 295799a7bf43f537708437639b84bcc1b784bcd6
 end
 
 function voisAdmissibles(chemin, deltap)
@@ -236,7 +232,6 @@ function voisAdmissibles(chemin, deltap)
     end
 end
 function main()
-<<<<<<< HEAD
     #name_instance="100_USA-road-d.BAY.gr"
     name_instance="900_USA-road-d.NY.gr"
     #voisinages(name_instance)
@@ -247,58 +242,4 @@ function main()
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
     chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
     voisAdmissibles(chemin, deltap)
-=======
-    name_instance="100_USA-road-d.BAY.gr"
-    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
-
-    # init delta p delta m
-    deltap=Dict()
-    deltam=Dict()
-    for i in 1:n
-        deltap[i]=[]
-        deltam[i]=[]
-    end
-    for (i,j) in keys(d)
-        push!(deltap[i],j)
-        push!(deltam[j],i)
-    end
-
-    timelimit = 30
-    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
-    println("solution est construite")
-    #=
-    ph[14] = 7
-    p[15] = 18
-    ph[15] = 6
-    d2 = 5 =#
-
-    chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
-    println("chemin = ", chemin)
-    println("i_ph_dec = ", i_ph_dec)
-    println("i_to_i_ph_dec = ", i_to_i_ph_dec)
-
-    longueur = length(chemin)
-
-    sum_poids, i_lim = getInfoSommets(chemin, p, ph, d2)
-    #=
-    nv_noeud = 15
-    old_noeud = 14
-
-    nv_poids = nvResPoids(i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, nv_noeud, old_noeud, d2, ph, p, longueur)
-    println("nv_poids = ", nv_poids)
-
-    nv_chemin = nvChemin(chemin, old_noeud, nv_noeud)
-    nv_poids_test, _ = getInfoSommets(nv_chemin, p, ph, d2)
-    println("nv_poids_test = ", nv_poids_test)
-    =#
-
-
-   
-    sum_arcs = Dist(chemin, d1, d, D)
-    println("sum_arcs  = ", sum_arcs)
-    println("chemin = ", chemin)
-
-   old_noeud, nv_noeud = VoisAmeliorant(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, sum_arcs)
-
->>>>>>> 295799a7bf43f537708437639b84bcc1b784bcd6
 end
