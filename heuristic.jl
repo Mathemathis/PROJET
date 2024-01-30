@@ -180,10 +180,74 @@ function VoisAmeliorant(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, d2, p
 end
 
 function deplacement(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs, longueur, i_lim, d1, d2, p, ph, d, D, old_noeud, nv_noeud)
-    
+<<<<<<< HEAD
+    """on enleve old noeud du chemin et on met nv_noeud, retourne les informations"""
+    # i_lim, longueur restent égaux
+    i_old_noeud = i_to_i_ph_dec[old_noeud]
+    sum_poids = nvResPoids(i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, nv_noeud, old_noeud, d2, ph, p, longueur) # utiliser le temps constant
+
+    chemin = nvChemin(chemin, old_noeud, nv_noeud)
+
+    i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] >= ph[y])
+    i_to_i_ph_dec=Dict() # passer du numero du sommet a sa position dans i_ph_dec
+    for i in collect(chemin)
+        i_to_i_ph_dec[i]= findfirst(x -> x == i, i_ph_dec)
+    end
+    sum_arcs =  Dist(chemin, d1, d, D)
+    return(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs)
 end
 
+function voisinages(name_instance)
+    # preparation solution
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    deltap, deltam = initDelta(d, n)
+    timelimit = 30
+    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
+    chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
+    longueur = length(chemin)
+    sum_poids, i_lim = getInfoSommets(chemin, p, ph, d2)
+    sum_arcs = Dist(chemin, d1, d, D)
+    println("Solution admissible")
+    println("sum_dist = ", sum_arcs)
+    println("sum_poids = ", sum_poids, ", S = ", S,  "\n")
+
+    # debut des voisinages
+    condition = true
+    while condition 
+        old_noeud, nv_noeud = VoisAmeliorant(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, sum_arcs)
+        println("old_noeud = ", old_noeud, " nv_noeud = ", nv_noeud, "\n")
+        if old_noeud == -1
+            condition = false
+        else
+            chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs = deplacement(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, sum_arcs, longueur, i_lim, d1, d2, p, ph, d, D, old_noeud, nv_noeud)
+        end
+    end
+=======
+    
+>>>>>>> 295799a7bf43f537708437639b84bcc1b784bcd6
+end
+
+function voisAdmissibles(chemin, deltap)
+    println("debut recherche voisinage admissibles")
+    for i in 2:(length(chemin)-1)
+        if chemin[i+1] in collect(deltap[chemin[i-1]])
+            println(chemin[i-1], chemin[i], chemin[i+1])
+        end
+    end
+end
 function main()
+<<<<<<< HEAD
+    #name_instance="100_USA-road-d.BAY.gr"
+    name_instance="900_USA-road-d.NY.gr"
+    #voisinages(name_instance)
+
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    deltap, deltam = initDelta(d, n)
+    timelimit = 30
+    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
+    chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
+    voisAdmissibles(chemin, deltap)
+=======
     name_instance="100_USA-road-d.BAY.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
 
@@ -236,4 +300,5 @@ function main()
 
    old_noeud, nv_noeud = VoisAmeliorant(chemin, i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, d2, ph, p, d1, d, D, longueur, deltap, deltam, S, sum_arcs)
 
+>>>>>>> 295799a7bf43f537708437639b84bcc1b784bcd6
 end
