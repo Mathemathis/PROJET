@@ -1,10 +1,12 @@
 include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
+using DataStructures
 
 function dijkstra(name_instance)
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     print("s = ", s, ", t = ", t)
     deltap, deltam = initDelta(d, n)
+
     nds_visites = []
     distance = PriorityQueue()
     distance[s] = 0
@@ -42,7 +44,7 @@ function dijkstra(name_instance)
 end
 
 function main()
-    name_instance="2500_USA-road-d.NY.gr"
+    name_instance="2500_USA-road-d.BAY.gr"
     bool, chemin = dijkstra(name_instance)
 
 
