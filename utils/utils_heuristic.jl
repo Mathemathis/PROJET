@@ -30,9 +30,9 @@ function cheminToAretes(chemin)
     renvoie une liste d'aretes [(i,j)] correspondant au chemin"""
     aretes = []
     current_node = chemin[1]
-    for i in 2:length(chemin) # calcul du nouveau chemin
-        push!(aretes, (current_node, chemin[i]))
-        current_node = chemin[i]
+    for (i, item) in enumerate(chemin[2:end]) # calcul du nouveau chemin
+        push!(aretes, (current_node, item))
+        current_node = item
     end
     return aretes
 end

@@ -2,7 +2,7 @@ include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
 include("constrSol.jl")
 include("vois1.jl")
-include("vois2.jl")
+
 
 function initSolDijkstra(n, s, t, S, d1, d2, p, ph, d, D)
     bool, chemin = dijkstra(n, s, t, S, d1, d2, p, ph, d, D)
@@ -18,14 +18,6 @@ function initSolDijkstra(n, s, t, S, d1, d2, p, ph, d, D)
     end
 
 end
-
-
-
-
-
-
-
-
 
 function voisinages(name_instance)
     # preparation solution
@@ -58,6 +50,7 @@ function voisAdmissibles(chemin, deltap)
         end
     end
 end
+
 function main()
     #name_instance="100_USA-road-d.BAY.gr"
     name_instance="500_USA-road-d.BAY.gr"
