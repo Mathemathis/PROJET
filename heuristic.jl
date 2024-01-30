@@ -3,121 +3,21 @@ using CPLEX
 
 include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
+include("constrSol.jl")
 
-function plneCompacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, name_instance, is_perturbated, timelimit, deltap, deltam)
-    """Crée un modèle et résout le problème compact (sans incertitudes)"""
-
-    if is_perturbated == "Yes"
-        for key in keys(d)
-            d[key]+=rand(1:1000)/100000
+function initSolDijkstra(n, s, t, S, d1, d2, p, ph, d, D)
+    bool, chemin = dijkstra(n, s, t, S, d1, d2, p, ph, d, D)
+    if bool == false
+        @warn("On a pas trouve de chemin de poids <= S")
+    else
+        i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] >= ph[y])
+        i_to_i_ph_dec=Dict() # passer du numero du sommet a sa position dans i_ph_dec
+        for i in collect(chemin)
+            i_to_i_ph_dec[i]= findfirst(x -> x == i, i_ph_dec)
         end
+        return(chemin, i_ph_dec, i_to_i_ph_dec)
     end
 
-    m = Model(CPLEX.Optimizer)
-    #set_silent(m)
-
-    @variable(m, x[i in 1:n, j in deltap[i]], Bin)
-    @variable(m, a[1:n], Bin)
-
-    @constraint(m,  [i in 1:n; i!=s && i!=t], sum(x[i,j] for j in deltap[i]) - sum(x[j,i] for j in deltam[i])==0)
-    @constraint(m,  sum(x[s,j] for j in deltap[s]) - sum(x[j,s] for j in deltam[s])==1)
-    @constraint(m,  sum(x[t,j] for j in deltap[t]) - sum(x[j,t] for j in deltam[t])==-1)
-
-    @constraint(m,  [i in 1:n; i!=t], sum(x[i,j] for j in deltap[i])==a[i])
-    @constraint(m,  a[t]==1)
-    @constraint(m,  sum(a[i]*p[i] for i in 1:n)<=S)
-
-    # set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
-    set_optimizer_attribute(m, "CPXPARAM_TimeLimit", timelimit)
-    set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
-    set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
-
-    @objective(m, Min, sum(x[i,j]*d[i,j] for i in 1:n for j in deltap[i]))
-
-    # Résolution d’un modèle
-    optimize!(m)
-
-    feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
-
-    if feasibleSolutionFound
-        return JuMP.value.(x), JuMP.value.(a)
-    end
-end
-
-function constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
-    """Donnne une solution initiale qui respecte la contrainte robuste pour les sommets
-    retourne les valeurs de x et a"""
-
-    m = Model(CPLEX.Optimizer)
-    set_silent(m)
-
-    @variable(m, x[i in 1:n, j in deltap[i]], Bin)
-    @variable(m, a[1:n], Bin)
-    @variable(m, gamma>=0)
-    @variable(m, eta[i in 1:n]>=0)
-
-    # chemin réalisable
-    @constraint(m,  [i in 1:n; i!=s && i!=t], sum(x[i,j] for j in deltap[i]) - sum(x[j,i] for j in deltam[i])==0)
-    @constraint(m,  sum(x[s,j] for j in deltap[s]) - sum(x[j,s] for j in deltam[s])==1)
-    @constraint(m,  sum(x[t,j] for j in deltap[t]) - sum(x[j,t] for j in deltam[t])==-1)
-
-    @constraint(m,  [i in 1:n; i!=t], sum(x[i,j] for j in deltap[i])==a[i])
-    @constraint(m,  a[t]==1)
-
-    # dual problème des sommets
-    @constraint(m,  [i in 1:n], gamma+eta[i]>=a[i]*ph[i])
-    @constraint(m,  sum(a[i]*p[i] for i in 1:n)+2*sum(eta[i] for i in 1:n)+d2*gamma<=S)
-
-    @objective(m, Min, 0)
-
-    # solution de départ
-    initial_values=plneCompacte(n, s, t, S, p, d, name_instance, "No", 60, deltap, deltam)
-    JuMP.set_start_value.(x, initial_values[1])
-    JuMP.set_start_value.(a, initial_values[2])
-    
-    # set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
-    set_optimizer_attribute(m, "CPXPARAM_TimeLimit", timelimit)
-    set_optimizer_attribute(m, "CPX_PARAM_THREADS", 1)
-    set_optimizer_attribute(m, "CPXPARAM_MIP_Display", 4)
-
-    # Résolution du modèle
-    optimize!(m)
-
-    feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
-
-    if feasibleSolutionFound
-        # Récupération des valeurs d’une variable 
-        return JuMP.value.(x), JuMP.value.(a)
-    end
-end
-
-function transformSol(a, n::Int64, s::Int64, t::Int64, ph::Vector{Int64}, d::Dict{Any, Any}, p, deltap, deltam)
-    """Prend une solution réalisable  avec la valeur de a
-    renvoie 
-    - le chemin 
-    - les indices des sommets empruntés par ordre décroissant de ph i_ph_dec[3] = nom du 3 eme sommet par ordre decroissant des ph
-    - un dictionnaire i_to_i_ph_dec[sommet 14] = ordre de 14 dans i_ph_dec"""
-    chemin = [s] # construction du chemin et des aretes
-    aretes = []
-    current_node=s
-    a[s] = 0
-    while current_node!=t
-        for j in collect(deltap[current_node])
-            if a[j]>= 1 - 1e-5
-                push!(chemin, j)
-                push!(aretes, (current_node, j))
-                current_node = j
-                a[j] = 0
-                break
-            end
-        end
-    end
-    i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] >= ph[y])
-    i_to_i_ph_dec=Dict() # passer du numero du sommet a sa position dans i_ph_dec
-    for i in collect(chemin)
-        i_to_i_ph_dec[i]= findfirst(x -> x == i, i_ph_dec)
-    end
-    return(chemin, i_ph_dec, i_to_i_ph_dec)
 end
 
 function nvResPoids(i_ph_dec, i_to_i_ph_dec, sum_poids, i_lim, nv_noeud, old_noeud, d2, ph, p, longueur)
@@ -199,10 +99,9 @@ end
 function voisinages(name_instance)
     # preparation solution
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    chemin, i_ph_dec, i_to_i_ph_dec  = initSolDijkstra(n, s, t, S, d1, d2, p, ph, d, D)
     deltap, deltam = initDelta(d, n)
-    timelimit = 30
-    x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
-    chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
+
     longueur = length(chemin)
     sum_poids, i_lim = getInfoSommets(chemin, p, ph, d2)
     sum_arcs = Dist(chemin, d1, d, D)
@@ -233,13 +132,13 @@ function voisAdmissibles(chemin, deltap)
 end
 function main()
     #name_instance="100_USA-road-d.BAY.gr"
-    name_instance="900_USA-road-d.NY.gr"
-    #voisinages(name_instance)
+    name_instance="100_USA-road-d.BAY.gr"
+    voisinages(name_instance)
 
-    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    #=n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     deltap, deltam = initDelta(d, n)
     timelimit = 30
     x, a =constrSol(n, s, t, S, p, d, ph, d2, timelimit, name_instance, deltap, deltam)
     chemin, i_ph_dec, i_to_i_ph_dec  = transformSol(a, n, s, t, ph, d, p, deltap, deltam)
-    voisAdmissibles(chemin, deltap)
+    voisAdmissibles(chemin, deltap)=#
 end

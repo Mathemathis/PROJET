@@ -2,8 +2,7 @@ include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
 using DataStructures
 
-function dijkstra(name_instance)
-    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+function dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
     print("s = ", s, ", t = ", t)
     deltap, deltam = initDelta(d, n)
 
@@ -45,7 +44,8 @@ end
 
 function main()
     name_instance="2500_USA-road-d.BAY.gr"
-    bool, chemin = dijkstra(name_instance)
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    bool, chemin = dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
 
 
     # test
