@@ -9,6 +9,22 @@ function nvChemin(chemin, old_noeud, nv_noeud)
     return(nv_chemin)
 end
 
+function nvCheminSup(chemin, noeud, nv_noeud)
+    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
+    on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin)
+        push!(nv_chemin, i)
+        if chemin[i] == noeud
+            push!(nv_chemin, nv_noeud)
+            i += 2
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
+
 function cheminToAretes(chemin)
     """chemin : liste de sommets
     renvoie une liste d'aretes [(i,j)] correspondant au chemin"""
@@ -21,8 +37,17 @@ function cheminToAretes(chemin)
     return aretes
 end
 
-function isChemin(chemin, deltap)
+function isChemin(chemin, deltap, s, t)
     """On peut tracer le chemin"""
+    if chemin[1] != s
+        @warn("Le chemin ne commence pas en s")
+        return false
+    else  
+        if chemin[end] != t
+            @warn("Le chemin ne finit pas en t")
+            return false
+        end
+    end
     for i in 1:(length(chemin)-1)
         if !(in(chemin[i+1], deltap[chemin[i]]))
             return(false) # on ne peut pas tracer le chemin
@@ -48,19 +73,17 @@ function getInfoSommets(chemin, p, ph, d2)
     i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
     res=sum([p[i] for i in collect(i_ph_dec)]) # somme deterministe
     capa=0 # budget pour augmenter les delta^2
-    i_res = 0 # dernier indice à être rempli totalement (indice dans i_poids_croissants) 
     for i in i_ph_dec
         if capa+2 <= d2
             capa+=2 # augmentation du budget
             res+=2*ph[i] # augmentation du poids total des sommets
-            i_res += 1 # on rempli totatlement ce sommet
         else 
             res+=(d2-capa)*ph[i]
             capa = 0
             break
         end
     end
-    return res, i_res # total des poids max, indice du dernier sommet rempli totalement
+    return res # total des poids max, indice du dernier sommet rempli totalement
 end
 
 
@@ -84,13 +107,13 @@ function getInfoArcs(aretes, d, D, d1)
 end
 
 
-function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S)
+function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S, s, t)
     """Renvoie true si la nouvelle solution est 
     -  bien un chemin
     -  de poids robuste admissible"""
     nv_chemin = nvChemin(chemin, old_noeud, nv_noeud) # calcul du nouveau chemin
-    if isChemin(nv_chemin, deltap)
-        res_poids, _ = getInfoSommets(chemin, p, ph, d2)
+    if isChemin(chemin, deltap, s, t)
+        res_poids = getInfoSommets(chemin, p, ph, d2)
         return(res_poids <= S) # poids 
     else
         return(false)
