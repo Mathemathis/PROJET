@@ -1,36 +1,9 @@
-function nvChemin(chemin, old_noeud, nv_noeud)
-    """Nouveau chemin ou on remplace old_noeud par un nouveau noeud"""
-    nv_chemin = copy(chemin) # calcul du nouveau chemin
-    for i in 1:length(chemin) 
-        if nv_chemin[i] == old_noeud
-            nv_chemin[i] = nv_noeud
-        end
-    end
-    return(nv_chemin)
-end
-
-function nvCheminSup(chemin, noeud, nv_noeud)
-    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
-    on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
-    nv_chemin = [] # calcul du nouveau chemin
-    i = 1
-    while i <= length(chemin)
-        push!(nv_chemin, i)
-        if chemin[i] == noeud
-            push!(nv_chemin, nv_noeud)
-            i += 2
-        end
-        i += 1
-    end
-    return(nv_chemin)
-end
-
 function cheminToAretes(chemin)
     """chemin : liste de sommets
     renvoie une liste d'aretes [(i,j)] correspondant au chemin"""
     aretes = []
     current_node = chemin[1]
-    for (i, item) in enumerate(chemin[2:end]) # calcul du nouveau chemin
+    for (i, item) in enumerate(chemin[2:end]) # calcul du nouveau chemin # attention i commence à 1
         push!(aretes, (current_node, item))
         current_node = item
     end
@@ -63,11 +36,6 @@ function Dist(chemin, d1, d, D)
 end
 
 
-function nvDist(chemin, nv_noeud, old_noeud, d1, d, D)
-    nv_chemin = nvChemin(chemin, old_noeud, nv_noeud)
-    return(Dist(nv_chemin, d1, d, D))
-end
-
 function getInfoSommets(chemin, p, ph, d2)
     """Renvoie le poids robuste d'un chemin ainsi que i_res le sommet limite dans les sommets orientes par ordre decroissant des ph"""
     i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
@@ -92,7 +60,6 @@ function getInfoArcs(aretes, d, D, d1)
     i_aretes_d =sort(aretes, lt = (x, y) -> d[x] >= d[y])
     res=sum([d[i] for i in collect(i_aretes_d)]) # somme deterministe
     capa=0 # budget pour augmenter les delta^2
-    
     for (i,j) in i_aretes_d
         if capa+D[i,j]<=d1
             capa+=D[i,j]
@@ -132,4 +99,19 @@ function initDelta(d, n)
         push!(deltam[j],i)
     end
     return(deltap, deltam)
+end
+
+function initChemin(a, deltap, s, t)
+    chemin = [s]
+    current_node=s
+    while current_node!=t
+        for j in collect(deltap[current_node])
+            if (a[j]>= 1 - 1e-5) && !(j in chemin)
+                push!(chemin, j)
+                current_node = j
+                break
+            end
+        end
+    end
+    return chemin
 end
