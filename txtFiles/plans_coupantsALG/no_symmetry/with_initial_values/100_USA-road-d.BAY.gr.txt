@@ -1,0 +1,53 @@
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               300
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 12880.3000.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 12880.3000.
+Reduced MIP has 274 rows, 2515 columns, and 11276 nonzeros.
+Reduced MIP has 2514 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.39 ticks)
+Clique table members: 381.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    91   Dual objective     =          8818.000000
+Root relaxation solution time = 0.01 sec. (3.30 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        12880.3000        0.0000           100.00%
+Found incumbent of value 12880.300000 after 3.85 sec. (8.93 ticks)
+      0     0     8818.0000     9    12880.3000     8818.0000      103   31.54%
+      0     2     9365.6677    12    12880.3000     9397.4740      110   27.04%
+Elapsed time = 4.81 sec. (41.89 ticks, tree = 0.01 MB, solutions = 1)
+*    10+    1                        10857.0600    10160.5216             6.42%
+Found incumbent of value 10857.060000 after 4.83 sec. (56.39 ticks)
+    450   159    10759.0500    10    10857.0600    10489.3609      949    3.39%
+   1060   165    10762.7167    10    10857.0600    10489.3609     1645    3.39%
+   1426   167    10835.0600     1    10857.0600    10660.3463     2502    1.81%
+   1941    39    10762.7167     8    10857.0600    10738.6357     3266    1.09%
+[11, 16, 41, 44, 57, 67, 69]
+12880.3 10457.0 true
+[11, 16, 41, 44, 57, 67, 69]
+[25, 34, 57, 61, 66, 69, 74]
+157.0 144
+10857.06 8818.0 false
+[11, 16, 41, 44, 57, 67, 69]
+12880.3 11385.17 true
+[3, 10, 21, 44, 53, 57, 69]
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 10857.060000000001
+Nombre d'itérations : 5

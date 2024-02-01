@@ -1,0 +1,143 @@
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               300
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 16104.8200.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 16104.8200.
+Reduced MIP has 496 rows, 7548 columns, and 34063 nonzeros.
+Reduced MIP has 7547 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.16 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 1173.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    70   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   214   Dual objective     =         10074.000001
+Removing perturbation.
+Root relaxation solution time = 0.02 sec. (16.94 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        16104.8200        0.0000           100.00%
+Found incumbent of value 16104.820000 after 1.93 sec. (33.51 ticks)
+      0     0    10983.0000    13    16104.8200    10983.0000      297   31.80%
+*     0+    0                        13395.7400    10983.0000            18.01%
+Found incumbent of value 13395.740000 after 2.18 sec. (171.44 ticks)
+      0     1    11737.6711    54    13395.7400    11737.6711      320   12.38%
+Elapsed time = 2.21 sec. (199.87 ticks, tree = 0.01 MB, solutions = 2)
+    117    38    infeasible          13395.7400    11737.6711      604   12.38%
+    260    68    12743.1036    19    13395.7400    11980.6043     1475   10.56%
+    409   167    12975.4769    26    13395.7400    11980.8461     2078   10.56%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 3564 columns.
+Reduced MIP has 496 rows, 3984 columns, and 18740 nonzeros.
+Reduced MIP has 3983 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.39 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 6 rows and 549 columns.
+Reduced MIP has 490 rows, 3435 columns, and 16144 nonzeros.
+Reduced MIP has 3434 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.09 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 16 columns.
+Reduced MIP has 490 rows, 3419 columns, and 16096 nonzeros.
+Reduced MIP has 3418 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.62 ticks)
+Represolve time = 0.20 sec. (180.40 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          2802.000000
+Iteration:    64   Dual objective     =          7105.000000
+Iteration:   133   Dual objective     =          9766.000000
+Iteration:   204   Dual objective     =         11080.709872
+Iteration:   266   Dual objective     =         11251.848969
+Iteration:   328   Dual objective     =         11357.615811
+Iteration:   390   Dual objective     =         11432.307268
+Iteration:   461   Dual objective     =         11586.868108
+Iteration:   534   Dual objective     =         11982.091517
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 1768 columns.
+Reduced MIP has 490 rows, 1651 columns, and 7706 nonzeros.
+Reduced MIP has 1650 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.66 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 1 rows and 39 columns.
+Reduced MIP has 489 rows, 1612 columns, and 7591 nonzeros.
+Reduced MIP has 1611 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.47 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 8 columns.
+Reduced MIP has 489 rows, 1604 columns, and 7569 nonzeros.
+Reduced MIP has 1603 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.46 ticks)
+Represolve time = 0.12 sec. (104.65 ticks)
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          2802.000000
+Iteration:    62   Dual objective     =         11924.600000
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 1029 columns.
+Reduced MIP has 489 rows, 575 columns, and 2701 nonzeros.
+Reduced MIP has 574 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.32 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 1 rows and 6 columns.
+Reduced MIP has 488 rows, 569 columns, and 2680 nonzeros.
+Reduced MIP has 568 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.17 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 13 columns.
+Reduced MIP has 488 rows, 556 columns, and 2640 nonzeros.
+Reduced MIP has 555 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.17 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 2 columns.
+Reduced MIP has 488 rows, 554 columns, and 2634 nonzeros.
+Reduced MIP has 553 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.11 ticks)
+Represolve time = 0.04 sec. (35.34 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          9836.000000
+[41, 69, 127, 128, 131, 137, 139, 143, 144]
+16104.820000000002 13215.0 true
+[41, 69, 127, 128, 131, 137, 139, 143, 144]
+[14, 41, 44, 46, 69, 118, 127, 139, 166]
+13395.74 10983.0 true
+[14, 41, 44, 46, 69, 118, 127, 139, 166]
+FEASIBLE_POINT
+OPTIMAL
+Valeur de l’objectif : 13395.740000000002
+Nombre d'itérations : 4
+
+User cuts applied:  1
+
+Root node processing (before b&c):
+  Real time             =    2.21 sec. (199.82 ticks)
+Sequential b&c:
+  Real time             =    1.53 sec. (1438.88 ticks)
+                          ------------
+Total (root+branch&cut) =    3.74 sec. (1638.71 ticks)

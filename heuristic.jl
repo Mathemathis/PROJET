@@ -1,9 +1,8 @@
 include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
 include("constrSol.jl")
-include("vois_un.jl")
-include("vois_deux.jl")
-include("vois_trois.jl")
+include("voisinages.jl")
+
 
 
 function initSolDijkstra(n, s, t, S, d1, d2, p, ph, d, D)
