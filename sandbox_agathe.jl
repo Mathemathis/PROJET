@@ -4,7 +4,7 @@ include("./utils/parsing.jl")
 
 
 function main()
-    name_instance="800_USA-road-d.COL.gr"
+    name_instance="2000_USA-road-d.COL.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     
     results_ALG=plans_coupantsALG(n, s, t, S, d1, d2, p, ph, d, D, name_instance, "no_symmetry", "with initial values", 300)    

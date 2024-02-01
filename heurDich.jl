@@ -9,6 +9,7 @@ function dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, lambda)
     chemin_emprunte = Dict()
     chemin_emprunte[s] = [s]
     while !isempty(obj)
+        nd_courant = dequeue!(obj)
         push!(nds_visites, nd_courant)
         voisins_non_visites = setdiff(deltap[nd_courant], nds_visites)
 
@@ -31,77 +32,48 @@ function dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, lambda)
     return(chemin_emprunte[t])
 end
 
-function dijkstraDist( n, s, t, S, d1, d2, p, ph, d, D, deltap)
-    nds_visites = []
-    chemin_emprunte = Dict()
-    chemin_emprunte[s] = [s]
-    distance = PriorityQueue()
-    distance[s] = 0
-    for _ in 1:n
-        nd_courant = dequeue!(distance)
-        push!(nds_visites, nd_courant)
-        voisins_non_visites = setdiff(deltap[nd_courant], nds_visites)
 
-        for i in collect(voisins_non_visites)
-            chemin = vcat(chemin_emprunte[nd_courant], [i]) # mise a jour du chemin
-            nv_dist = Dist(chemin, d1, d, D)
-            if haskey(distance, i)
-                if nv_dist < distance[i]
-                    chemin_emprunte[i] = chemin 
-                    distance[i] = nv_dist
-                end
-            else
-                chemin_emprunte[i] = chemin
-                distance[i] = nv_dist
-            end
-        end
-    end
-    return(chemin_emprunte[t])
-end
 
 function RechDich( n, s, t, S, d1, d2, p, ph, d, D, deltap)
-    chemin_inf = dijkstraDist( n, s, t, S, d1, d2, p, ph, d, D, deltap)
-    b_sup, best_chemin = dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, Inf)
+    chemin_inf = dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, 1) # prise en compte uniquement des aretes
+    chemin_sup = dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, 0) # prise en compte uniquement des poids
 
-    
+    borne_inf =  Dist(chemin_inf, d1, d, D)
+    borne_sup = Dist(chemin_sup, d1, d, D)
 
-    a =  Dist(chemin_inf, d1, d, D)
-    s1 = getInfoSommets(chemin_inf, p, ph, d2)
-
-    if s1 <= S 1e-5 
-        return(chemin_inf, 1e-5)
-    end
-   
-    b =  Dist(best_chemin, d1, d, D)
-    m = (a+b)/2
+    lambda = 1/2
     iter = 0
-
-    println("Premier solution réalisable de valeur ", b)
-
-    # b contient toujours la valeur de la plus petite solution realisable
-    # a contient toujours la valeur de la plus grande solution realisable
-    while abs(a-b) > 1e-3 && iter < 100
-        println(" a = ", a, ", b = ", b)
-        m = (a+b)/2
-        bool, chemin = dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, m)
-        if bool # on a trouve un chemin
-            b = m
-            best_chemin = chemin
+    a = 0
+    b = 1
+    while b - a > 1e-5 && iter < 100
+        #println("b inf = ", borne_inf, ", b sup = ", borne_sup)
+        #println("lambda = ", lambda)
+        #println("[ ", a, ", ", b, "]")
+        lambda = (a + b)/2
+        chemin = dijkstraPoids( n, s, t, S, d1, d2, p, ph, d, D, deltap, lambda)
+        dist =  Dist(chemin, d1, d, D)
+        poids = getInfoSommets(chemin, p, ph, d2)
+        if poids <= S + 1e-7 
+            #println("solution realisable")
+            a = lambda
+            if dist < borne_sup
+                borne_sup = dist
+                chemin_sup = chemin
+            end
         else
-            a = m
+            b = lambda
         end
-        iter += 1
+        borne_inf = max(dist + (1-lambda)* (poids - S) / lambda, borne_inf)
     end
-   
-    return(best_chemin, abs(a-b))
 
+    return(borne_sup, borne_inf, chemin_sup)
 
 end
 function main()
-    name_instance="800_USA-road-d.COL.gr"
+    name_instance="2000_USA-road-d.COL.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     deltap, deltam = initDelta(d, n)
-    chemin, gap = @time RechDich( n, s, t, S, d1, d2, p, ph, d, D, deltap)
+    bsup, binf, chemin = @time RechDich( n, s, t, S, d1, d2, p, ph, d, D, deltap)
 
     poids = getInfoSommets(chemin, p, ph, d2)
     valeur = Dist(chemin, d1, d, D)
@@ -110,6 +82,6 @@ function main()
     println("est ce bien un chemin ?", isChemin(chemin, deltap, s, t))
     println("S = ", S)
     println("poids de notre chemin = ", poids, "\n")
-    println("valeur = ", valeur)
-    println("gap = ", gap)
+    println("valeur obj = ", valeur)
+    println(" [", binf, ", ", bsup, "]")
 end
