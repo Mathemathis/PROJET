@@ -8,7 +8,7 @@ function dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
 
     nds_visites = []
     distance = PriorityQueue()
-    distance[s] = 0
+    distance[s] = p[s] + min(2, d2) * ph[s]
     chemin_emprunte = Dict()
     chemin_emprunte[s] = [s]
     for _ in 1:n
