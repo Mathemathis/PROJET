@@ -48,20 +48,19 @@ function main()
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     nv_dist = getInfoSommets(chemin, p, ph, d2)
     deltap, deltam = initDelta(d, n)
-    println(" Est bien un chemin ?", isChemin(chemin, deltap))
+    println(" Est bien un chemin ?", isChemin(chemin, deltap, s, t))
     println("distance du chemin = ", nv_dist)
     println("valeur de S = ", S)
 end
 
 function get_init_sol(name_instance)
-    bool, chemin = dijkstra(name_instance)
-
 
     # test
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
-    nv_dist, _ = getInfoSommets(chemin, p, ph, d2)
+    bool, chemin = dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
+    nv_dist = getInfoSommets(chemin, p, ph, d2)
     deltap, deltam = initDelta(d, n)
-    println(" Est bien un chemin ?", isChemin(chemin, deltap))
+    println(" Est bien un chemin ?", isChemin(chemin, deltap, s, t))
     println("distance du chemin = ", nv_dist)
     println("valeur de S = ", S)
     a=[0 for i in 1:n]
