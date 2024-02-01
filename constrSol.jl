@@ -16,7 +16,6 @@ function dijkstra(name_instance)
         nd_courant = dequeue!(distance)
         push!(nds_visites, nd_courant)
 
-        println("le noeud courant est ", nd_courant) 
         voisins_non_visites = setdiff(deltap[nd_courant], nds_visites)
         for i in collect(voisins_non_visites)
             chemin = vcat(chemin_emprunte[nd_courant], [i]) # mise a jour du chemin
@@ -55,4 +54,26 @@ function main()
     println(" Est bien un chemin ?", isChemin(chemin, deltap))
     println("distance du chemin = ", nv_dist)
     println("valeur de S = ", S)
+end
+
+function get_init_sol(name_instance)
+    bool, chemin = dijkstra(name_instance)
+
+
+    # test
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
+    nv_dist, _ = getInfoSommets(chemin, p, ph, d2)
+    deltap, deltam = initDelta(d, n)
+    println(" Est bien un chemin ?", isChemin(chemin, deltap))
+    println("distance du chemin = ", nv_dist)
+    println("valeur de S = ", S)
+    a=[0 for i in 1:n]
+    x=Dict(key => 0.0 for key in keys(d))
+    for i in 1:(length(chemin)-1)
+        x[chemin[i], chemin[i+1]]=1.0
+    end
+    for node in chemin 
+        a[node]=1
+    end
+    return x, a
 end

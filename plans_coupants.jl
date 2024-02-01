@@ -2,6 +2,7 @@ using JuMP
 using CPLEX
 include("./utils/parsing.jl")
 include("PLNE_dual_poids.jl")
+include("./constrSol.jl")
 
 function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64, p::Vector{Int64}, ph::Vector{Int64}, d, D, name_instance, symmetry, with_initial_values, timelimit)
     """Résout la méthode des plans coupants (par callback)"""
@@ -9,7 +10,8 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
         Keys=collect(keys(D))
         d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S)
         p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
-        initial_values=plne_dual_poids(n, s, t, S, d1, d2, p, ph, d, D)
+        # initial_values=plne_dual_poids(n, s, t, S, d1, d2, p, ph, d, D)
+        initial_values=get_init_sol(name_instance)
 
         borne_sup=sum([initial_values[1][key]*d[key] for key in Keys])
         capa=0
@@ -31,19 +33,10 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
             end
         end
         println(borne_sup)
-        n, s, t, S, d1, d2, p, ph, d, D, initial_values = simplify_instance(name_instance, borne_sup+1, initial_values)
+        n, s, t, S, d1, d2, p, ph, d, D, initial_values = simplify_instance(name_instance, borne_sup, initial_values)
     end
     # initialisation des voisinages entrants et sortants pour chaque sommet
-    deltap=Dict()
-    deltam=Dict()
-    for i in 1:n
-        deltap[i]=[]
-        deltam[i]=[]
-    end
-    for (i,j) in keys(d)
-        push!(deltap[i],j)
-        push!(deltam[j],i)
-    end
+    deltap, deltam=initDelta(d, n)
     println(n)
 
     Keys=collect(keys(D))
@@ -113,6 +106,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
 
             x_val=Dict(key => callback_value(cb_data, x[key]) for key in Keys) # on stocke x
             a_val = [callback_value(cb_data, a[i]) for i in 1:n] # on stocke a
+            println([i for i in 1:n if a_val[i]>1e-5])
 
             z_etoile = callback_value(cb_data, z) # valeur objectif actuelle
               
@@ -145,6 +139,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
             end
         
             if res >= S + 1e-5 # si notre poids est plus grand que S -> ajout de la contrainte
+                println(res, " ", S)
                 cstr = @build_constraint(sum(a[i]*(p[i]+delta_2_val[i]*ph[i]) for i in 1:n) <= S)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr)
                 if symmetry=="no_symmetry"
@@ -196,17 +191,20 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
 
             if res >=  z_etoile + 1e-5 # si le coût du chemin est plus grand que la valeur objectif actuelle -> ajout de la contrainte
                 iter24+=1
+                println(res, " ", z_etoile, " ", flag_23)
                 cstr2 = @build_constraint(sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
                 if symmetry=="no_symmetry"
                     y_val=Dict((d_D,k) => callback_value(cb_data, y[d_D, k]) for d_D in d_D_set for k in 1:K_set[d_D])
                     K_set_star=Dict(d_D => k for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)
-                    if res >= best_integer+0.1 && best_integer>=0
-                        cstr3 = @build_constraint(sum(sum(y[d_D,k] for k in K_set_star[d_D]:K_set[d_D]) for d_D in keys(K_set_star))<= sum(y_val[d_D, k] for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)-1)
-                    else
-                        cstr3 = @build_constraint(sum(sum(y[d_D,k] for k in K_set_star[d_D]:K_set[d_D]) for d_D in keys(K_set_star))<= sum(y_val[d_D, k] for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)-sum(x_val[i,j]-x[i,j] for i in 1:n for j in deltap[i] if x_val[i,j]>1e-5)/sum([x_val[i,j] for i in 1:n for j in deltap[i]]))
+                    if flag_23
+                        if res >= best_integer+0.1 && best_integer>=0
+                            cstr3 = @build_constraint(sum(sum(y[d_D,k] for k in K_set_star[d_D]:K_set[d_D]) for d_D in keys(K_set_star))<= sum(y_val[d_D, k] for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)-1)
+                        else
+                            cstr3 = @build_constraint(sum(sum(y[d_D,k] for k in K_set_star[d_D]:K_set[d_D]) for d_D in keys(K_set_star))<= sum(y_val[d_D, k] for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)-sum(x_val[i,j]-x[i,j] for i in 1:n for j in deltap[i] if x_val[i,j]>1e-5)/sum([x_val[i,j] for i in 1:n for j in deltap[i]]))
+                        end
+                        MOI.submit(m, MOI.LazyConstraint(cb_data), cstr3)
                     end
-                    MOI.submit(m, MOI.LazyConstraint(cb_data), cstr3)
                     cstr2b=@build_constraint(sum(y[d_D,k]* d_D[1]*min(k*d_D[2], delta_1_val_d_D[d_D]) for d_D in keys(K_set_star) for k in 1:K_set[d_D])
                                                 + sum(d_D[1]*k*y[d_D,k] for d_D in d_D_set for k in 1:K_set[d_D]) <= z)
                     MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2b)
@@ -404,28 +402,5 @@ function plans_coupantsPLNE(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
         # println("Value x : ", JuMP.value.(x))
         println("Valeur de l’objectif : ", JuMP.objective_value(m))
         return JuMP.value.(x), JuMP.value.(a)
-    end
-end
-
-function isIntegerPoint(cb_data::CPLEX.CallbackContext, context_id::Clong)
-
-    # context_id  == CPX_CALLBACKCONTEXT_CANDIDATE si le  callback est
-    # appelé dans un des deux cas suivants :
-    # cas 1 - une solution entière a été obtenue; ou
-    # cas 2 - une relaxation non bornée a été obtenue
-    if context_id != CPX_CALLBACKCONTEXT_CANDIDATE
-        return false
-    end
-
-    # Pour déterminer si on est dans le cas 1 ou 2, on essaie de récupérer la
-    # solution entière courante
-    ispoint_p = Ref{Cint}()
-    ret = CPXcallbackcandidateispoint(cb_data, ispoint_p)
-
-    # S'il n'y a pas de solution entière
-    if ret != 0 || ispoint_p[] == 0
-        return false
-    else
-        return true
     end
 end
