@@ -244,7 +244,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
     logfile = open(logfile_path, "w")
-    redirect_stdout(logfile)
+    #redirect_stdout(logfile)
 
 
     # On précise que le modèle doit utiliser notre fonction de callback
@@ -386,7 +386,7 @@ function plans_coupantsPLNE(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
     logfile = open(logfile_path, "w")
-    redirect_stdout(logfile)
+    #redirect_stdout(logfile)
 
     # On précise que le modèle doit utiliser notre fonction de callback
     MOI.set(m, CPLEX.CallbackFunction(), mon_super_callback)

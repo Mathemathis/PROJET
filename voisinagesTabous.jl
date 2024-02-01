@@ -3,14 +3,20 @@ include("utils/utils_heuristic.jl")
 include("constrSol.jl")
 
 
-function getBestVoisTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t, tabous)
+function getBestVoisTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous)
     """Retourne le meilleur mouvement qui n'est pas dans les tabous"""
-    res = RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t, tabous)
-    res = vcat(res, RechLocInfTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t, tabous))
-    res = vcat(res, RechLocSupTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t))
+    res = RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous)
+    res = vcat(res, RechLocInfTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous))
+    res = vcat(res, RechLocSupTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous))
+    if res != []
+        min_chemin = argmin(x -> x[2], res)
+        min_index = findfirst(x -> x == min_chemin, res)
+        min_chemin = res[min_index][1]
+        return(true, min_chemin)
+    else
+        return(false, [])
+    end
 end
-
-
 
 function IsAdmissibleTabous(chemin, tabous)
     aretes = cheminToAretes(chemin)
@@ -22,7 +28,8 @@ function IsAdmissibleTabous(chemin, tabous)
     return true
 end
 
-function RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t, tabous)
+
+function RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous)
     res = []
     for (j, noeud) in enumerate(chemin[2:(end-1)])
         i = j + 1
@@ -32,6 +39,9 @@ function RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_ar
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin = nvCheminEch(chemin, noeud, nv_noeud)
             if IsAdmissibleTabous(nv_chemin, tabous)
+                if !isChemin(chemin, deltap, s, t)
+                    @warn("ceci n'est pas un chemin")
+                end
                 nv_poids = getInfoSommets(nv_chemin, p, ph, d2)
                 if nv_poids <= S
                     nv_dist = Dist(nv_chemin, d1, d, D) 
@@ -44,7 +54,7 @@ function RechLocEchTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_ar
 end
 
 
-function RechLocInfTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t, tabous)
+function RechLocInfTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous)
     res = []
     for (i, noeud) in enumerate(chemin[1:(end-3)])
         sommets_admissibles = intersect(deltap[chemin[i]], deltam[chemin[i+3]]) # il existe un chemin
@@ -67,11 +77,11 @@ function RechLocInfTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_ar
 end
 
 
-function RechLocSupTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t)
+function RechLocSupTabous(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, s, t, tabous)
     res = []
     for (i, noeud) in enumerate(chemin[1:(end-1)])
         sommets_admissibles = intersect(deltap[chemin[i]], deltam[chemin[i+1]]) # il existe un chemin
-        println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", chemin[i])
+        #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", chemin[i])
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin =  nvCheminSup(chemin, chemin[i], nv_noeud)
             if IsAdmissibleTabous(nv_chemin, tabous)

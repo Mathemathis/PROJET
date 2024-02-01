@@ -35,6 +35,7 @@ function dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
             end
         end
     end
+    @warn("La methode dirjska n'a pas trouve de chemin robuste pour les poids")
     return(false, [])
 end
 

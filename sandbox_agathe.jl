@@ -4,14 +4,15 @@ include("./utils/parsing.jl")
 
 
 function main()
-    name_instance="100_USA-road-d.BAY.gr"
+    name_instance="500_USA-road-d.BAY.gr"
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     
-    results_ALG=plans_coupantsALG(n, s, t, S, d1, d2, p, ph, d, D, name_instance, "no_symmetry", "with initial values", 300)    
+    #results_ALG=plans_coupantsALG(n, s, t, S, d1, d2, p, ph, d, D, name_instance, "no_symmetry", "with initial values", 300)    
 
 
     println("\n \n HEURISTIQUE \n")
-    nv_chemin = voisinages(name_instance)
+    #nv_chemin = voisinages(name_instance)
+    nv_chemin, best_sol = rechTabou(name_instance)
 
     nv_poids = @time getInfoSommets(nv_chemin, p, ph, d2)
     deltap, deltam = initDelta(d, n)

@@ -115,3 +115,46 @@ function initChemin(a, deltap, s, t)
     end
     return chemin
 end
+
+
+function nvCheminInf(chemin, noeud, nv_noeud)
+    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
+    on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin)
+        push!(nv_chemin, i)
+        if chemin[i] == noeud
+            push!(nv_chemin, nv_noeud)
+            i += 2
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
+
+function nvCheminSup(chemin, noeud, nv_noeud)
+    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
+    on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin)
+        push!(nv_chemin, i)
+        if chemin[i] == noeud
+            push!(nv_chemin, nv_noeud)
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
+
+function nvCheminEch(chemin, old_noeud, nv_noeud)
+    """Nouveau chemin ou on remplace old_noeud par un nouveau noeud"""
+    nv_chemin = copy(chemin) # calcul du nouveau chemin
+    for i in 1:length(chemin) 
+        if nv_chemin[i] == old_noeud
+            nv_chemin[i] = nv_noeud
+        end
+    end
+    return(nv_chemin)
+end
