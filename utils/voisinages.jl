@@ -1,6 +1,5 @@
-include("utils/parsing.jl")
-include("utils/utils_heuristic.jl")
-include("constrSol.jl")
+include("parsing.jl")
+include("utils_heuristic.jl")
 
 """Garde un nombre de noeud constants
 chemin[i-1] -> chemin[i] = old_noeud -> chemin[i+1]
@@ -32,17 +31,13 @@ function RechLocEch(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s,
 end
 
 
-
-
-
-
 """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
     on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
 
 function RechLocInf(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t)
     for (i, noeud) in enumerate(chemin[1:(end-3)])
         sommets_admissibles = intersect(deltap[chemin[i]], deltam[chemin[i+3]]) # il existe un chemin
-        #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", chemin[i])
+        #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", noeud)
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin =  nvCheminInf(chemin, chemin[i], nv_noeud)
             if !isChemin(chemin, deltap, s, t)
@@ -73,7 +68,7 @@ end
 function RechLocSup(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s, t)
     for (i, noeud) in enumerate(chemin[1:(end-1)])
         sommets_admissibles = intersect(deltap[chemin[i]], deltam[chemin[i+1]]) # il existe un chemin
-        println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", chemin[i])
+        #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", noeud)
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin =  nvCheminSup(chemin, chemin[i], nv_noeud)
             if !isChemin(chemin, deltap, s, t)

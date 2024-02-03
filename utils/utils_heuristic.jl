@@ -1,3 +1,5 @@
+using DataStructures
+
 function cheminToAretes(chemin)
     """chemin : liste de sommets
     renvoie une liste d'aretes [(i,j)] correspondant au chemin"""
@@ -35,7 +37,6 @@ function Dist(chemin, d1, d, D)
     return(getInfoArcs(aretes, d, D, d1))
 end
 
-
 function getInfoSommets(chemin, p, ph, d2)
     """Renvoie le poids robuste d'un chemin ainsi que i_res le sommet limite dans les sommets orientes par ordre decroissant des ph"""
     i_ph_dec =sort(chemin, lt = (x, y) -> ph[x] <= ph[y], rev = true)
@@ -53,7 +54,6 @@ function getInfoSommets(chemin, p, ph, d2)
     end
     return res # total des poids max, indice du dernier sommet rempli totalement
 end
-
 
 function getInfoArcs(aretes, d, D, d1)
     """Renvoie la distance d'une suite d'aretes"""
@@ -73,8 +73,7 @@ function getInfoArcs(aretes, d, D, d1)
     return res
 end
 
-
-function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S, s, t)
+function isAdmissible(chemin, nv_noeud, old_noeud, d2, p, ph, deltap, S, s, t) # je ne me sers plus de cette fonction
     """Renvoie true si la nouvelle solution est 
     -  bien un chemin
     -  de poids robuste admissible"""
@@ -102,11 +101,12 @@ function initDelta(d, n)
 end
 
 function initChemin(a, deltap, s, t)
+    """Prend les valeurs de a du PLNE et retourne le chemin associe"""
     chemin = [s]
     current_node=s
     while current_node!=t
         for j in collect(deltap[current_node])
-            if (a[j]>= 1 - 1e-5) && !(j in chemin)
+            if (a[j]>= 1 - 1e-5) && !(j in chemin) # attention à ne pas faire de boucles
                 push!(chemin, j)
                 current_node = j
                 break
@@ -116,6 +116,7 @@ function initChemin(a, deltap, s, t)
     return chemin
 end
 
+# fonctions de deplacement associees aux voisinages
 
 function nvCheminInf(chemin, noeud, nv_noeud)
     """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
