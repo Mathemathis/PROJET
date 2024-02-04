@@ -124,7 +124,7 @@ function nvCheminInf(chemin, noeud, nv_noeud)
     nv_chemin = [] # calcul du nouveau chemin
     i = 1
     while i <= length(chemin)
-        push!(nv_chemin, i)
+        push!(nv_chemin, chemin[i])
         if chemin[i] == noeud
             push!(nv_chemin, nv_noeud)
             i += 2
@@ -135,12 +135,12 @@ function nvCheminInf(chemin, noeud, nv_noeud)
 end
 
 function nvCheminSup(chemin, noeud, nv_noeud)
-    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] -> chemin[i+2] -> chemin[i+3]
-    on fait chemin[i] -> nv_noeud -> chemin[i+3]"""
+    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] 
+    on fait chemin[i] -> nv_noeud -> chemin[i+1]"""
     nv_chemin = [] # calcul du nouveau chemin
     i = 1
     while i <= length(chemin)
-        push!(nv_chemin, i)
+        push!(nv_chemin, chemin[i])
         if chemin[i] == noeud
             push!(nv_chemin, nv_noeud)
         end

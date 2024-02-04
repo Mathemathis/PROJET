@@ -13,16 +13,19 @@ function RechLocEch(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s,
         #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", noeud)
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin = nvCheminEch(chemin, noeud, nv_noeud)
+            if !isChemin(nv_chemin, deltap, s, t)
+                @warn("RechLocEch - ceci n'est pas un chemin")
+            end
             nv_poids_lent = getInfoSommets(nv_chemin, p, ph, d2)
             if nv_poids_lent <= S
                 #println("Solution admissible")
                 if Dist(nv_chemin, d1, d, D) < sum_arcs - 1e-5 # temps lineaire en le nombre d'aretes
-                    println("____________________________")
+                    #=println("____________________________")
                     println("on a trouve une solution ameliorante")
                     println("nv_noeud admissible ? ", isChemin(chemin, deltap, s, t))
                     println("nv distances ? ", Dist(nv_chemin, d1, d, D))
-                    println("____________________________")
-                    return(true, nv_chemin)
+                    println("____________________________")=#
+                    return(true, nv_chemin) 
                 end
             end
         end
@@ -40,17 +43,17 @@ function RechLocInf(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s,
         #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", noeud)
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin =  nvCheminInf(chemin, chemin[i], nv_noeud)
-            if !isChemin(chemin, deltap, s, t)
-                @warn("ceci n'est pas un chemin")
+            if !isChemin(nv_chemin, deltap, s, t)
+                @warn("RechLocInf - ceci n'est pas un chemin")
             end
             nv_poids = getInfoSommets(nv_chemin, p, ph, d2)
             if nv_poids <= S
                 #println("Solution admissible")
                 if Dist(nv_chemin, d1, d, D) < sum_arcs # temps lineaire en le nombre d'aretes
-                    println("____________________________")
+                    #=println("____________________________")
                     println("Chemin dmissible ? ",isChemin(nv_chemin, deltap, s, t))
                     println("Distance du chemin = ", Dist(nv_chemin, d1, d, D))
-                    println("____________________________")
+                    println("____________________________")=#
                     return(true, nv_chemin)
                 end
             end
@@ -71,17 +74,17 @@ function RechLocSup(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, sum_arcs, s,
         #println("sommets admissibles = ", sommets_admissibles, " pour le sommet ", noeud)
         for nv_noeud in collect(sommets_admissibles)
             nv_chemin =  nvCheminSup(chemin, chemin[i], nv_noeud)
-            if !isChemin(chemin, deltap, s, t)
-                @warn("ceci n'est pas un chemin")
+            if !isChemin(nv_chemin, deltap, s, t)
+                @warn("RechLocSup - ceci n'est pas un chemin")
             end
             nv_poids = getInfoSommets(nv_chemin, p, ph, d2)
             if nv_poids <= S
                 #println("Solution admissible")
                 if Dist(nv_chemin, d1, d, D) < sum_arcs # temps lineaire en le nombre d'aretes
-                    println("____________________________")
+                    #=println("____________________________")
                     println("Chemin dmissible ? ",isChemin(nv_chemin, deltap, s, t))
                     println("Distance du chemin = ", Dist(nv_chemin, d1, d, D))
-                    println("____________________________")
+                    println("____________________________") =#
                     return(true, nv_chemin)
                 end
             end

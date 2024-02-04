@@ -41,31 +41,33 @@ function rechLoc(name_instance)
     deltap, deltam = initDelta(d, n)
 
     dist = Dist(chemin, d1, d, D) # meilleur distance atteinte
+    iter = 0
 
     # debut des voisinages
     k = 1
     while k <= 3
         if time() > timelimit
-            println("on sort à cause du temps")
+            #println("on sort à cause du temps")
             return(dist, chemin)
         end
         trouve, nv_chemin =  Vk(k, chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
         if !trouve
             k += 1
-            println("ON CHERCHE DANS LE VOISINAGE ", k)
+            #println("ON CHERCHE DANS LE VOISINAGE ", k)
         else
             chemin = nv_chemin
             dist = Dist(chemin, d1, d, D)
             k = 1
+            iter += 1
         end
     end
-    return(dist, chemin)
+    return(dist, chemin, iter)
 end
 
 function main()
     name_instance="1500_USA-road-d.COL.gr"
     
-    dist, nv_chemin = @time rechLoc(name_instance)
+    dist, nv_chemin, _ = @time rechLoc(name_instance)
 
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     nv_poids = getInfoSommets(nv_chemin, p, ph, d2)

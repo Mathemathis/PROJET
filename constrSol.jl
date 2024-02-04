@@ -3,7 +3,7 @@ include("utils/utils_heuristic.jl")
 using DataStructures
 
 function dijkstra( n, s, t, S, d1, d2, p, ph, d, D)
-    println("s = ", s, ", t = ", t)
+    #println("s = ", s, ", t = ", t)
     deltap, deltam = initDelta(d, n)
 
     nds_visites = []
