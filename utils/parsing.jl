@@ -92,6 +92,7 @@ function simplify_instance(name_instance, borne_sup, initial_values)
     initial_x=Dict(key  => initial_values[1][key] for key in keys(d))
     initial_a=[initial_values[2][i] for i in 1:n]
     progress=true
+    Correspondance=Dict(i => i for i in 1:n)
     while progress
         println(n, " ", s, " ", size(collect(keys(d))))
         distance_s=djikstra(n, s, d)
@@ -115,8 +116,11 @@ function simplify_instance(name_instance, borne_sup, initial_values)
         else
             n=size(new_set)[1]
         end
+        for i in 1:n
+            Correspondance[i]=Correspondance[new_set[i]]
+        end
     end
-    return  n, s, t, S, d1, d2, p, ph, d, D, [initial_x, initial_a]
+    return  n, s, t, S, d1, d2, p, ph, d, D, [initial_x, initial_a], Correspondance
 end
 
 function calcul_d_D_k_set(p, d, D,S, borne_sup)
