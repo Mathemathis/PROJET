@@ -24,7 +24,11 @@ function Vk(k, chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
             if k == 3
                 return RechLocSup(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
             else
-                return(false, [])
+                if k == 4
+                    return RechLocInf2(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
+                else
+                    return(false, [])
+                end
             end
         end
     end

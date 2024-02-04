@@ -159,3 +159,21 @@ function nvCheminEch(chemin, old_noeud, nv_noeud)
     end
     return(nv_chemin)
 end
+
+
+function nvCheminInf2(chemin, noeud, k, l)
+    """Saute mouton / au lieu de chemin[i] -> chemin[i+1] 
+    on fait chemin[i] -> nv_noeud -> chemin[i+1]"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin)
+        push!(nv_chemin, chemin[i])
+        if chemin[i] == noeud
+            push!(nv_chemin, k)
+            push!(nv_chemin, l)
+            i += 3
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
