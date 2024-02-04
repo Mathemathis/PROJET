@@ -8,15 +8,16 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     """Résout la méthode des plans coupants (par callback)"""
     if with_initial_values=="with initial values"
         Keys=collect(keys(D))
-        d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S)
+        d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S, 100000)
         p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
-        # initial_values=plne_dual_poids(n, s, t, S, d1, d2, p, ph, d, D)
         initial_values=get_init_sol(name_instance)
 
         borne_sup=sum([initial_values[1][key]*d[key] for key in Keys])
         capa=0
+        last_d_D=Nothing
         for d_D in reverse(d_D_set)
             if capa>d1-1e-5
+                last_d_D=d_D
                 break
             end
             for (i,j) in A_d_D_set[d_D]
@@ -32,7 +33,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
                 end
             end
         end
-        println(borne_sup)
+        println("Borne sup ", borne_sup, " ", last_d_D)
         n, s, t, S, d1, d2, p, ph, d, D, initial_values = simplify_instance(name_instance, borne_sup, initial_values)
     end
     # initialisation des voisinages entrants et sortants pour chaque sommet
@@ -40,7 +41,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     println(n)
 
     Keys=collect(keys(D))
-    d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S)
+    d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S, borne_sup)
     p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
 
     m = Model(CPLEX.Optimizer)
@@ -63,21 +64,26 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
     @variable(m, a[1:n], Bin)
     if symmetry=="no_symmetry"
-        @variable(m, y[d_D in d_D_set, k in 1:K_set[d_D]], Bin)
-        @constraint(m,  [d_D in d_D_set], sum(k*y[d_D,k] for k in 1:K_set[d_D]) ==sum(x[i,j] for (i,j) in A_d_D_set[d_D]))
-        @constraint(m,  [d_D in d_D_set], sum(y[d_D,k] for k in 1:K_set[d_D]) <=1)
+        @variable(m, y[d_D in d_D_set, k in 0:K_set[d_D]], Bin)
+        @constraint(m,  [d_D in d_D_set], sum(k*y[d_D,k] for k in 0:K_set[d_D]) ==sum(x[i,j] for (i,j) in A_d_D_set[d_D]))
+        @constraint(m,  [d_D in d_D_set], sum(y[d_D,k] for k in 0:K_set[d_D]) ==1)
 
         @constraint(m, sum(d_D[1]*k*y[d_D,k] for d_D in d_D_set for k in 1:K_set[d_D]) <= z)
+
+        # @constraint(m, [d_D in d_D_set, key in A_d_D_set[d_D]; d_D[1]>=last_d_D[1]-200], y[d_D,0] <=1-x[key])
         
-        @variable(m, wp[p_i in p_set, k in 1:Kp_set[p_i]], Bin)
-        @constraint(m,  [p_i in p_set], sum(k*wp[p_i,k] for k in 1:Kp_set[p_i]) ==sum(a[i] for i in A_p_set[p_i]))
-        @constraint(m,  [p_i in p_set], sum(wp[p_i,k] for k in 1:Kp_set[p_i]) <=1)
+        @variable(m, wp[p_i in p_set, k in 0:Kp_set[p_i]], Bin)
+        @constraint(m,  [p_i in p_set], sum(k*wp[p_i,k] for k in 0:Kp_set[p_i]) ==sum(a[i] for i in A_p_set[p_i]))
+        @constraint(m,  [p_i in p_set], sum(wp[p_i,k] for k in 0:Kp_set[p_i]) ==1)
 
         @constraint(m, sum(p_i*k*wp[p_i,k] for p_i in p_set for k in 1:Kp_set[p_i]) <= S)
 
-        @variable(m, wph[ph_i in ph_set, k in 1:Kph_set[ph_i]], Bin)
-        @constraint(m,  [ph_i in ph_set], sum(k*wph[ph_i,k] for k in 1:Kph_set[ph_i]) ==sum(a[i] for i in A_ph_set[ph_i]))
-        @constraint(m,  [ph_i in ph_set], sum(wph[ph_i,k] for k in 1:Kph_set[ph_i]) <=1)
+        @variable(m, wph[ph_i in ph_set, k in 0:Kph_set[ph_i]], Bin)
+        @constraint(m,  [ph_i in ph_set], sum(k*wph[ph_i,k] for k in 0:Kph_set[ph_i]) ==sum(a[i] for i in A_ph_set[ph_i]))
+        @constraint(m,  [ph_i in ph_set], sum(wph[ph_i,k] for k in 0:Kph_set[ph_i]) ==1)
+
+        # @constraint(m, [ph_i in ph_set, i in A_ph_set[ph_i]], wph[ph_i,0] <=1-a[i])
+        # @constraint(m, [p_i in p_set, i in A_p_set[p_i]], wp[p_i,0] <=1-a[i])
     end
 
     @constraint(m,  [i in 1:n; i!=s && i!=t], sum(x[i,j] for j in deltap[i]) - sum(x[j,i] for j in deltam[i])==0)
@@ -96,6 +102,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     best_integer=-1
 
     function mon_super_callback(cb_data::CPLEX.CallbackContext, context_id::Clong)
+
         if isIntegerPoint(cb_data, context_id)
 
             iter+=1
@@ -106,7 +113,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
 
             x_val=Dict(key => callback_value(cb_data, x[key]) for key in Keys) # on stocke x
             a_val = [callback_value(cb_data, a[i]) for i in 1:n] # on stocke a
-            println([i for i in 1:n if a_val[i]>1e-5])
+            # println([i for i in 1:n if a_val[i]>1e-5])
 
             z_etoile = callback_value(cb_data, z) # valeur objectif actuelle
               
@@ -139,7 +146,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
             end
         
             if res >= S + 1e-5 # si notre poids est plus grand que S -> ajout de la contrainte
-                println(res, " ", S)
+                # println(res, " ", S)
                 cstr = @build_constraint(sum(a[i]*(p[i]+delta_2_val[i]*ph[i]) for i in 1:n) <= S)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr)
                 if symmetry=="no_symmetry"
@@ -191,7 +198,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
 
             if res >=  z_etoile + 1e-5 # si le coût du chemin est plus grand que la valeur objectif actuelle -> ajout de la contrainte
                 iter24+=1
-                println(res, " ", z_etoile, " ", flag_23)
+                # println(res, " ", z_etoile, " ", flag_23)
                 cstr2 = @build_constraint(sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
                 MOI.submit(m, MOI.LazyConstraint(cb_data), cstr2)
                 if symmetry=="no_symmetry"
@@ -244,7 +251,7 @@ function plans_coupantsALG(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
     logfile = open(logfile_path, "w")
-    #redirect_stdout(logfile)
+    redirect_stdout(logfile)
 
 
     # On précise que le modèle doit utiliser notre fonction de callback
@@ -324,7 +331,7 @@ function plans_coupantsPLNE(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
             a_val = [callback_value(cb_data, a[i]) for i in 1:n]
 
             z_etoile = callback_value(cb_data, z)
-            println("current z* = ", z_etoile)
+            # println("current z* = ", z_etoile)
               
             # poids du chemin
 
@@ -386,7 +393,7 @@ function plans_coupantsPLNE(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
     logfile_path = abspath(logfile_name)
     logfile = open(logfile_path, "w")
-    #redirect_stdout(logfile)
+    redirect_stdout(logfile)
 
     # On précise que le modèle doit utiliser notre fonction de callback
     MOI.set(m, CPLEX.CallbackFunction(), mon_super_callback)

@@ -9,7 +9,7 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
     deltap, deltam=initDelta(d, n)
 
     Keys=collect(keys(D))
-    d_set, Kd_set, A_d_set=calcul_d_k_set(p, d, S)
+    d_set, Kd_set, A_d_set=calcul_d_k_set(p, d, S, 100000)
     # p_set, Kp_set, A_p_set=calcul_p_k_set(p, S)
     
     initial_values=get_init_sol(name_instance)

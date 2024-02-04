@@ -10,7 +10,7 @@ function plne_dual(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64,
     # initialisation des voisinages entrants et sortants pour chaque sommet
     if with_initial_values=="with initial values"
         Keys=collect(keys(D))
-        d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S)
+        d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S, 100000)
         p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
         # initial_values=plne_dual_poids(n, s, t, S, d1, d2, p, ph, d, D)
         initial_values=get_init_sol(name_instance)
@@ -34,13 +34,13 @@ function plne_dual(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64,
                 end
             end
         end
-        println(borne_sup)
+        # println(borne_sup)
         n, s, t, S, d1, d2, p, ph, d, D, initial_values = simplify_instance(name_instance, borne_sup, initial_values)
     end
 
     deltap, deltam=initDelta(d, n)
     Keys=collect(keys(D))
-    d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S)
+    d_D_set, K_set, A_d_D_set=calcul_d_D_k_set(p, d, D, S, borne_sup)
     p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
 
     m = Model(CPLEX.Optimizer)
@@ -119,7 +119,7 @@ function plne_dual(n::Int64, s::Int64, t::Int64, S::Int64, d1::Int64, d2::Int64,
             # println(edges_visited, x_last)
             obj_value=sum(x_val[key]*d[key] for key in Keys)+alpha_val*d1+sum(beta_val[d_D,k]*d_D[2]*k for d_D in d_D_set for k in 1:K_set[d_D])
             if edges_visited!=x_last
-                println(nodes_visited, " ", obj_value, " ", best_integer)
+                # println(nodes_visited, " ", obj_value, " ", best_integer)
                 y_val=Dict((d_D,k) => callback_value(cb_data, y[d_D, k]) for d_D in d_D_set for k in 1:K_set[d_D])
                 K_set_star=Dict(d_D => k for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)
                 cstr3 = @build_constraint(sum(sum(y[d_D,k] for k in K_set_star[d_D]:K_set[d_D]) for d_D in keys(K_set_star))<= sum(y_val[d_D, k] for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)-sum(x_val[i,j]-x[i,j] for i in 1:n for j in deltap[i] if x_val[i,j]>1e-5)/sum([x_val[i,j] for i in 1:n for j in deltap[i]]))

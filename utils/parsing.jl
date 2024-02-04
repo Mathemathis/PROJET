@@ -119,12 +119,12 @@ function simplify_instance(name_instance, borne_sup, initial_values)
     return  n, s, t, S, d1, d2, p, ph, d, D, [initial_x, initial_a]
 end
 
-function calcul_d_D_k_set(p, d, D,S)
+function calcul_d_D_k_set(p, d, D,S, borne_sup)
     d_D=[(d[key], D[key]) for key in collect(keys(D))]
     count_element=Dict(d_D .=> 0)
     min_p=minimum(p)
     for element in d_D
-        if count_element[element]<min(S/min_p, 100000/element[1])
+        if count_element[element]<min(S/min_p, borne_sup/element[1])
             count_element[element] += 1
         end
     end
@@ -140,12 +140,12 @@ function calcul_d_D_k_set(p, d, D,S)
     return d_D_set , count_element, A_d_D_set
 end
 
-function calcul_d_k_set(p, d, S)
+function calcul_d_k_set(p, d, S, borne_sup)
     d_s=[d[key] for key in collect(keys(D))]
     count_element=Dict(d_s .=> 0)
     min_p=minimum(p)
     for element in d_s
-        if count_element[element]<min(S/min_p, 100000/element[1])
+        if count_element[element]<min(S/min_p, borne_sup/element[1])
             count_element[element] += 1
         end
     end
