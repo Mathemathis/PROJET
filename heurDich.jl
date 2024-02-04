@@ -56,10 +56,12 @@ function RechDich(name_instance)
     a = 0
     b = 1
 
+    iter = 0 # nb de fois ou on a une borne sup améliorante
+
     while b - a > 1e-5 && iter < 100
         if time() > timelimit
-            println("on sort à cause du temps")
-            return(borne_sup, chemin_sup)
+            #println("on sort à cause du temps")
+            return(borne_sup, chemin_sup, iter)
         end
         lambda = (a + b)/2
         chemin = dijkstraLambda( s, t, d1, d2, p, ph, d, D, deltap, lambda)
@@ -70,20 +72,21 @@ function RechDich(name_instance)
             if dist < borne_sup
                 borne_sup = dist
                 chemin_sup = chemin
-                println("borne sup = ", borne_sup)
+                iter += 1
+                #println("borne sup = ", borne_sup)
             end
         else
             b = lambda
         end        
     end
-    return(borne_sup, chemin_sup)
+    return(borne_sup, chemin_sup, iter)
 
 end
 
 
 function main()
     name_instance="200_USA-road-d.COL.gr"
-    bsup, chemin = @time RechDich(name_instance)
+    bsup, chemin, _ = @time RechDich(name_instance)
 
 
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")

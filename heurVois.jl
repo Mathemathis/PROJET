@@ -48,7 +48,7 @@ function rechLoc(name_instance)
     while k <= 3
         if time() > timelimit
             #println("on sort à cause du temps")
-            return(dist, chemin)
+            return(dist, chemin, iter)
         end
         trouve, nv_chemin =  Vk(k, chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
         if !trouve
