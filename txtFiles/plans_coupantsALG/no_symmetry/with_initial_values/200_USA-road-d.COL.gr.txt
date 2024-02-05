@@ -1,0 +1,137 @@
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               30
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Generic callback                                 0xfe
+Processing 1 MIP starts.
+MIP start 'm1' defined solution with objective 37623.4500.
+1 of 1 MIP starts provided solutions.
+MIP start 'm1' defined initial solution with objective 37623.4500.
+Reduced MIP has 552 rows, 5539 columns, and 24758 nonzeros.
+Reduced MIP has 5538 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.85 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 853.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    68   Dual objective     =             0.000000
+Iteration:   155   Dual objective     =         19728.000000
+Root relaxation solution time = 0.01 sec. (14.19 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        37623.4500        0.0000           100.00%
+Found incumbent of value 37623.450000 after 1.21 sec. (26.60 ticks)
+      0     0    23886.0000    48    37623.4500    23886.0000      226   36.51%
+      0     2    25062.0690    58    37623.4500    25193.8674      237   33.04%
+Elapsed time = 2.13 sec. (195.89 ticks, tree = 0.01 MB, solutions = 1)
+*    10+    4                        35630.7000    25946.0000            27.18%
+Found incumbent of value 35630.700000 after 2.17 sec. (219.58 ticks)
+*    70+   32                        34624.3100    25961.0000            25.02%
+                                                UserPurge1: 3                  
+Found incumbent of value 34624.310000 after 2.33 sec. (342.09 ticks)
+*   100+   37                        31845.6700    25961.0000            18.48%
+                                                UserPurge1: 3                  
+Found incumbent of value 31845.670000 after 2.42 sec. (413.81 ticks)
+    117    40    30794.6207   108    31845.6700    25961.0000      738   18.48%
+                                                UserPurge1: 3                  
+    206    97    28759.7556    40    31845.6700    26527.0274     1576   16.70%
+                                                UserPurge1: 6                  
+    320   202    30725.4166    45    31845.6700    26527.0274     2310   16.70%
+    474   316    30971.6850    16    31845.6700    27503.8371     3294   13.63%
+
+Performing restart 1
+
+Repeating presolve.
+Tried aggregator 0 times.
+Reduced presolve eliminated 0 rows and 510 columns.
+Reduced MIP has 552 rows, 5029 columns, and 22774 nonzeros.
+Reduced MIP has 5028 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (0.98 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 10 rows and 94 columns.
+Reduced MIP has 542 rows, 4935 columns, and 22508 nonzeros.
+Reduced MIP has 4934 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.37 ticks)
+Tried aggregator 0 times.
+Reduced presolve eliminated 2 rows and 43 columns.
+Reduced MIP has 540 rows, 4892 columns, and 22380 nonzeros.
+Reduced MIP has 4891 binaries, 0 generals, 0 SOSs, and 0 indicators.
+Presolve time = 0.00 sec. (1.30 ticks)
+Represolve time = 0.25 sec. (189.49 ticks)
+
+Iteration log . . .
+Iteration:     1   Dual objective     =          4285.000000
+Iteration:   116   Dual objective     =         13105.000000
+Iteration:   217   Dual objective     =         19919.550000
+Iteration:   297   Dual objective     =         23353.000000
+Iteration:   376   Dual objective     =         25106.975634
+Iteration:   452   Dual objective     =         27381.573750
+    520     2    27476.9260   147    31845.6700    28740.5259     4042    9.75%
+    528     2    29440.3843   115    31845.6700    29440.3843     4419    7.55%
+    540     2    30621.8811    53    31845.6700    29663.3066     4628    6.85%
+                                                UserPurge1: 3                  
+    609     7    30916.8750    30    31845.6700    29663.3066     4784    6.85%
+    697     3        cutoff          31845.6700    31298.6864     5033    1.72%
+                                                UserPurge1: 3                  
+FEASIBLE_POINT
+OPTIMAL
+
+User cuts applied:  13
+
+Root node processing (before b&c):
+  Real time             =    2.13 sec. (196.03 ticks)
+Sequential b&c:
+  Real time             =    3.07 sec. (2802.39 ticks)
+                          ------------
+Total (root+branch&cut) =    5.20 sec. (2998.42 ticks)
+Version identifier: 22.1.1.0 | 2022-11-28 | 9160aff4d
+CPXPARAM_Preprocessing_Presolve                  0
+CPXPARAM_Threads                                 1
+CPXPARAM_MIP_Display                             4
+CPXPARAM_MIP_Strategy_FPHeur                     -1
+CPXPARAM_TimeLimit                               30
+CPXPARAM_MIP_Limits_CutsFactor                   0
+Found incumbent of value 36200.000000 after 0.09 sec. (50.44 ticks)
+Dual steepest-edge pricing selected.
+Clique table members: 853.
+MIP emphasis: balance optimality and feasibility.
+MIP search method: dynamic search.
+Parallel mode: none, using 1 thread.
+Initializing dual steep norms . . .
+
+Iteration log . . .
+Iteration:     1   Dual objective     =             0.000000
+Iteration:    67   Dual objective     =             0.000000
+Perturbation started.
+Iteration:   101   Dual objective     =             0.000000
+Iteration:   211   Dual objective     =         23560.000001
+Removing perturbation.
+Root relaxation solution time = 0.01 sec. (15.48 ticks)
+
+        Nodes                                         Cuts/
+   Node  Left     Objective  IInf  Best Integer    Best Bound    ItCnt     Gap
+
+*     0+    0                        36200.0000        0.0000           100.00%
+Found incumbent of value 36200.000000 after 0.12 sec. (70.88 ticks)
+      0     0    23886.0000    50    36200.0000    23886.0000      249   34.02%
+*     0+    0                        23886.0000    23886.0000             0.00%
+Found incumbent of value 23886.000000 after 0.22 sec. (194.08 ticks)
+      0     0        cutoff          23886.0000    23886.0000      257    0.00%
+Elapsed time = 0.22 sec. (194.08 ticks, tree = 0.01 MB, solutions = 2)
+
+Root node processing (before b&c):
+  Real time             =    0.22 sec. (194.32 ticks)
+Sequential b&c:
+  Real time             =    0.00 sec. (0.00 ticks)
+                          ------------
+Total (root+branch&cut) =    0.22 sec. (194.32 ticks)
