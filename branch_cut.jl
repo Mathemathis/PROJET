@@ -4,6 +4,7 @@ using CPLEX
 
 function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
     """Résout la méthode des branch and cut (sans callback)"""
+
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     if with_initial_values=="with initial values"
         Keys=collect(keys(D))
@@ -102,15 +103,53 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
     iter24=0
     best_integer=-1
 
-    flag_23=true
-    flag_24=true
+    flag_23=false
+    flag_24=false
 
-    while flag_23 || flag_24
+    if with_initial_values=="with initial values"
+        JuMP.set_start_value.(x, JuMP.Containers.SparseAxisArray(initial_values[1]))
+        JuMP.set_start_value.(a, initial_values[2])
+    end
+
+    start = time()
+    start_time = time() + timelimit # limite de temps (même limite quand en argument)
+
+
+    while (!flag_23 || !flag_24) 
+        println("Debut boucle while")
+
         iter+=1
         flag_23=false
         flag_24=false
 
         optimize!(m)
+        println("fin optimisation")
+
+        if time() > start_time
+            println("on sort à cause du temps")
+            computation_time = time() - start
+            feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
+
+            if feasibleSolutionFound
+                a_val=JuMP.value.(a)
+                x_val=JuMP.value.(x)
+
+                Nodes=[i for i in 1:n if a_val[i]>1e-5]
+                Nodes_tries=[s]
+                Current_node=s
+                while Current_node!=t
+                    for i in Nodes
+                        if i in deltap[Current_node] && x_val[Current_node, i]>0.1
+                            push!(Nodes_tries, i)
+                            Current_node=i
+                            break
+                        end
+                    end
+                end
+                
+                return name_instance, computation_time, [correspondance[i] for i in Nodes], JuMP.objective_value(m), objective_bound(m), iter23, iter24
+            end
+        end
 
         # solution courante
         x_val = JuMP.value.(x)
@@ -118,11 +157,12 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
         z_etoile = JuMP.objective_value(m)
         wp_val=JuMP.value.(wp)
         wph_val= JuMP.value.(wph) 
-        Kp_set_star=Dict(p_i => k for p_i in p_set for k in 1:Kp_set[p_i] if wp_val[p_i,k]>1e-5)  
-        Kph_set_star=Dict(ph_i => k for ph_i in ph_set for k in 1:Kph_set[ph_i] if wph_val[ph_i,k]>1e-5) 
+        
+        
         y_val= JuMP.value.(y)
         K_set_star=Dict(d_D => k for d_D in d_D_set for k in 1:K_set[d_D] if y_val[d_D,k]>1e-5)         
-                
+        Kph_set_star=Dict(ph_i => k for ph_i in ph_set for k in 1:Kph_set[ph_i] if wph_val[ph_i,k]>1e-5) 
+        Kp_set_star=Dict(p_i => k for p_i in p_set for k in 1:Kp_set[p_i] if wp_val[p_i,k]>1e-5)  
 
         # sous problème poids du chemin
         """Idée : on ajoute une contrainte sur le poids des sommets en trouvant un augmentation des poids très élevée"""
@@ -152,13 +192,12 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
                 end
             end
         end
-
+        println("poids chemin calcule")
 
         if res >= S + 1e-5
+            println("contraite type 23")
             iter23 += 1
-            println("Ajout d'une contrainte de type 23")
-            if symmetry=="no_symmetry"
-                
+            if symmetry=="no_symmetry"     
                 @constraint(m, sum(sum(wp[p_i,k] for k in Kp_set_star[p_i]:Kp_set[p_i]) for p_i in keys(Kp_set_star))
                                             + sum(sum(wph[ph_i,k] for k in Kph_set_star[ph_i]:Kph_set[ph_i]) for ph_i in keys(Kph_set_star))
                                             <= sum(wp_val[p_i, k] for p_i in p_set for k in 1:Kp_set[p_i] if wp_val[p_i,k]>1e-5)
@@ -202,7 +241,10 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
             end
         end
 
+        println("distance chemin calcule")
+
         if res >=  z_etoile + 1e-5
+            println("contraite type 24")
             iter24+=1
             @constraint(m,  sum(x[key]*d[key]*(1+delta_1_val[key]) for key in Keys) <= z)
             if symmetry=="no_symmetry"
@@ -215,20 +257,24 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
                 end
                 @constraint(m, sum(y[d_D,k]* d_D[1]*min(k*d_D[2], delta_1_val_d_D[d_D]) for d_D in keys(K_set_star) for k in 1:K_set[d_D])
                                                 + sum(d_D[1]*k*y[d_D,k] for d_D in d_D_set for k in 1:K_set[d_D]) <= z)
-            else
-                flag_24=true
             end
-            if flag_23 && flag_24
-                if best_integer>= 0
-                    best_integer=min(best_integer, res)
-                else
-                    best_integer=res
-                end
+        else
+            flag_24=true
+        end
+        if flag_23 && flag_24
+            if best_integer>= 0
+                best_integer=min(best_integer, res)
+            else
+                best_integer=res
             end
         end
-    end
 
+
+
+    end
+    computation_time = time() - start
     feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
+
     if feasibleSolutionFound
         a_val=JuMP.value.(a)
         x_val=JuMP.value.(x)

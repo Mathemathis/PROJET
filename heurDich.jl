@@ -3,6 +3,7 @@ include("utils/utils_heuristic.jl")
 using DataStructures
 
 function dijkstraLambda(s, t, d1, d2, p, ph, d, D, deltap, lambda)
+    timelimit = 60
     nds_visites = []
     obj = PriorityQueue()
     obj[s] = (1 - lambda) * (p[s] + min(2, d2) * ph[s])
@@ -42,7 +43,7 @@ end
 function RechDich(name_instance)
     """ méthode de la recherche dichotomique en faisant varier lambda
     retourne la borne superieure trouvée (distance sur les aretes) et le chemin qui y est associé (pour verifications)"""
-    timelimit = time() + 60 # limite de temps fixée à 60 secondes
+    start_time = time() + timelimit # limite de temps fixée à 60 secondes
     # preparation solution
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     deltap, deltam = initDelta(d, n)
@@ -59,7 +60,7 @@ function RechDich(name_instance)
     iter = 0 # nb de fois ou on a une borne sup améliorante
 
     while b - a > 1e-5 && iter < 100
-        if time() > timelimit
+        if time() > start_time
             #println("on sort à cause du temps")
             return(borne_sup, chemin_sup, iter)
         end

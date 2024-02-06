@@ -1,5 +1,6 @@
 using DataFrames
 using CSV
+using Distributed
 include("heurVois.jl")
 include("heurDich.jl")
 
@@ -42,8 +43,30 @@ function pipelineHeurDich()
 end
 
 
+function multiprocess(csv_name)
+    csv_file_path = "results/" * csv_name *".csv"  # changer ici nom fichier
+    files = readdir("data/")[2:end] # noms des fichiers
+    result_df = DataFrame(CSV.File(csv_file_path))
+
+    Threads.@threads for name_instance in files
+        if !(any(x -> occursin(name_instance, string(x)), result_df.instance))
+            println("instance : ", name_instance)
+            println("processor : " , Threads.threadid())
+            start = time()
+            dist, _, iter = rechLoc(name_instance) # changer ici nom fonction
+            time_elapsed = time() - start
+            nodenames = ["instance", "time", "ubound", "nb_iter"]
+            df =  DataFrame([[] for _ = nodenames] , nodenames)
+            
+            push!(df, (instance = name_instance, time = time_elapsed, ubound=dist, nb_iter = iter))
+            println("on a mis dans result_df")
+            CSV.write(csv_file_path, DataFrame(df), append=true)
+            
+        end
+    end
+end
 
 function main()
-    pipelineHeurDich()
+    multiprocess("heurVois")
 
 end
