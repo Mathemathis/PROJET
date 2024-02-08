@@ -143,15 +143,19 @@ end
 
 function mpCompacte(csv_name)
     pertubated = "Yes"
-    csv_file_path = "results/" * csv_name * pertubated *".csv"  # changer ici nom fichier
+    csv_file_path = "./results/" * csv_name * pertubated *".csv"  # changer ici nom fichier
     files = readdir("data/")[2:end] # noms des fichiers
     result_df = DataFrame(CSV.File(csv_file_path))
     #nodenames = ["Instance", "Temps", "UB", "LB" ]
     #result_df =  DataFrame([[] for _ = nodenames] , nodenames)
 
-    Threads.@threads for name_instance in files
-    #for name_instance in files
-        if !(any(x -> occursin(name_instance, string(x)), result_df.Instance))
+    #Threads.@threads for name_instance in files
+    instance_values = unique(result_df."Instance")
+    filtered_elements = setdiff(files, instance_values)
+    println("filetered elem = ", filtered_elements)
+
+    Threads.@threads for name_instance in filtered_elements
+       
             println("instance : ", name_instance)
             println("processor : " , Threads.threadid())
 
@@ -164,7 +168,7 @@ function mpCompacte(csv_name)
             push!(df, (Instance = name_instance, Temps = computation_time, UB=UB, LB = LB))
             println("on a mis dans result_df")
             CSV.write(csv_file_path, DataFrame(df), append=true)
-        end
+        
     end
 end
 
