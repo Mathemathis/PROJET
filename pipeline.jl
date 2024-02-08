@@ -145,29 +145,29 @@ function mpCompacte(csv_name)
     pertubated = "Yes"
     csv_file_path = "results/" * csv_name * pertubated *".csv"  # changer ici nom fichier
     files = readdir("data/")[2:end] # noms des fichiers
-    #result_df = DataFrame(CSV.File(csv_file_path))
+    result_df = DataFrame(CSV.File(csv_file_path))
     #nodenames = ["Instance", "Temps", "UB", "LB" ]
     #result_df =  DataFrame([[] for _ = nodenames] , nodenames)
 
-    #Threads.@threads for name_instance in files
-    for name_instance in files
-        
-        println("instance : ", name_instance)
-        println("processor : " , Threads.threadid())
+    Threads.@threads for name_instance in files
+    #for name_instance in files
+        if !(any(x -> occursin(name_instance, string(x)), result_df.Instance))
+            println("instance : ", name_instance)
+            println("processor : " , Threads.threadid())
 
-            
-        name_instance, computation_time, UB, LB = plne_compacte(name_instance, pertubated, 600)
-            
-        nodenames = ["Instance", "Temps", "UB", "LB" ]
-        df =  DataFrame([[] for _ = nodenames] , nodenames)
-            
-        push!(df, (Instance = name_instance, Temps = computation_time, UB=UB, LB = LB))
-        println("on a mis dans result_df")
-        CSV.write(csv_file_path, DataFrame(df), append=true)
-
+                
+            name_instance, computation_time, UB, LB = plne_compacte(name_instance, pertubated, 600)
+                
+            nodenames = ["Instance", "Temps", "UB", "LB" ]
+            df =  DataFrame([[] for _ = nodenames] , nodenames)
+                
+            push!(df, (Instance = name_instance, Temps = computation_time, UB=UB, LB = LB))
+            println("on a mis dans result_df")
+            CSV.write(csv_file_path, DataFrame(df), append=true)
+        end
     end
-
 end
+
 function main()
     mpCompacte("Compacte")
     #mpBranchCut("BranchCut")
