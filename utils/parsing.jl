@@ -145,7 +145,7 @@ function calcul_d_D_k_set(p, d, D,S, borne_sup)
 end
 
 function calcul_d_k_set(p, d, S, borne_sup)
-    d_s=[d[key] for key in collect(keys(D))]
+    d_s=[d[key] for key in collect(keys(d))]
     count_element=Dict(d_s .=> 0)
     min_p=minimum(p)
     for element in d_s

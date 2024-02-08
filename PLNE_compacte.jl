@@ -22,6 +22,7 @@ function plne_compacte(name_instance, is_perturbated, timelimit)
     end
 
     m = Model(CPLEX.Optimizer)
+    set_silent(m)
 
     @variable(m, x[i in 1:n, j in deltap[i]], Bin)
     @variable(m, a[1:n], Bin)

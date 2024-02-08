@@ -4,6 +4,7 @@ using Distributed
 include("heurVois.jl")
 include("heurDich.jl")
 include("branch_cut.jl")
+include("PLNE_compacte.jl")
 
 
 function pipelineHeurVois()
@@ -141,35 +142,34 @@ end
 
 
 function mpCompacte(csv_name)
-    csv_file_path = "results/" * csv_name *".csv"  # changer ici nom fichier
+    pertubated = "Yes"
+    csv_file_path = "results/" * csv_name * pertubated *".csv"  # changer ici nom fichier
     files = readdir("data/")[2:end] # noms des fichiers
-    result_df = DataFrame(CSV.File(csv_file_path))
+    #result_df = DataFrame(CSV.File(csv_file_path))
+    #nodenames = ["Instance", "Temps", "UB", "LB" ]
+    #result_df =  DataFrame([[] for _ = nodenames] , nodenames)
 
-    Threads.@threads for name_instance in files
-    #for name_instance in files
-        if !(any(x -> occursin(name_instance, string(x)), result_df.instance))
-            println("instance : ", name_instance)
-            println("processor : " , Threads.threadid())
+    #Threads.@threads for name_instance in files
+    for name_instance in files
+        
+        println("instance : ", name_instance)
+        println("processor : " , Threads.threadid())
 
             
-            name_instance, computation_time, UB, LB = plne_compacte(name_instance, "No", 600)
-            vector_string = join(string.(chemin), ", ")
-            modified_string = replace(vector_string, "," => "/")
+        name_instance, computation_time, UB, LB = plne_compacte(name_instance, pertubated, 600)
+            
+        nodenames = ["Instance", "Temps", "UB", "LB" ]
+        df =  DataFrame([[] for _ = nodenames] , nodenames)
+            
+        push!(df, (Instance = name_instance, Temps = computation_time, UB=UB, LB = LB))
+        println("on a mis dans result_df")
+        CSV.write(csv_file_path, DataFrame(df), append=true)
 
-            time_elapsed = time() - start
-            nodenames = ["Instance", "Temps", "obj", "bounds", "iter23", "iter24", "chemin"]
-            df =  DataFrame([[] for _ = nodenames] , nodenames)
-            
-            push!(df, (Instance = name_instance, Temps = computation_time, obj=obj, bounds = bounds, iter23 = iter23, iter24 = iter24, chemin = string(chemin)))
-            println("on a mis dans result_df")
-            CSV.write(csv_file_path, DataFrame(df), append=true)
-            
-        end
     end
 
 end
 function main()
-    mpHeurVois("heurVois")
+    mpCompacte("Compacte")
     #mpBranchCut("BranchCut")
 
 end
