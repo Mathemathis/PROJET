@@ -1,5 +1,25 @@
 using DataStructures
 
+
+function deleteBoucles(chemin)
+    #println("chemin = ", chemin)
+    B = [(i, count(==(i), chemin)) for i in unique(chemin)]
+    #println("B =", B)
+    duplicates = filter(kv -> kv[2] > 1, B) # sommets comptés deux fois
+    #println("duplicates = ", duplicates)
+    if duplicates == []
+        return chemin
+    else
+        println("chemin avec des doublons")
+        doublon = duplicates[1][1]
+        indices = findall(x -> x == doublon, chemin)
+        #println("indices = ", indices)
+        chemin = vcat(chemin[1:indices[1]], chemin[(indices[2]+1):end])
+        #println("chemin = ", chemin)
+        return deleteBoucles(chemin)
+    end
+end
+                
 function cheminToAretes(chemin)
     """chemin : liste de sommets
     renvoie une liste d'aretes [(i,j)] correspondant au chemin"""
@@ -34,6 +54,7 @@ end
 function Dist(chemin, d1, d, D)
     "renvoie la distance d'un chemin"
     aretes = cheminToAretes(chemin)
+    #println("aretes = ", aretes)
     return(getInfoArcs(aretes, d, D, d1))
 end
 
@@ -150,13 +171,21 @@ function nvCheminSup(chemin, noeud, nv_noeud)
 end
 
 function nvCheminEch(chemin, old_noeud, nv_noeud)
+    #println("nouveau noeud = ", nv_noeud)
+    #println("old noeud = ", old_noeud)
     """Nouveau chemin ou on remplace old_noeud par un nouveau noeud"""
-    nv_chemin = copy(chemin) # calcul du nouveau chemin
-    for i in 1:length(chemin) 
-        if nv_chemin[i] == old_noeud
-            nv_chemin[i] = nv_noeud
+    #println("chemin = ", chemin)
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin)
+        if chemin[i] == old_noeud
+            push!(nv_chemin, nv_noeud)
+        else
+            push!(nv_chemin, chemin[i])
         end
+        i += 1
     end
+    #println("nv chemin = ", nv_chemin)
     return(nv_chemin)
 end
 
@@ -172,6 +201,38 @@ function nvCheminInf2(chemin, noeud, k, l)
             push!(nv_chemin, k)
             push!(nv_chemin, l)
             i += 3
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
+
+function nvCheminEch2(chemin, noeud, k, l)
+    """Nouveau chemin ou on remplace old_noeud par un nouveau noeud"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <= length(chemin) 
+        push!(nv_chemin, chemin[i])
+        if chemin[i] == noeud
+            push!(nv_chemin, k)
+            push!(nv_chemin, l)
+            i += 2
+        end
+        i += 1
+    end
+    return(nv_chemin)
+end
+
+function nvCheminSup2(chemin, noeud, k, l)
+    """Nouveau chemin ou on remplace old_noeud par un nouveau noeud"""
+    nv_chemin = [] # calcul du nouveau chemin
+    i = 1
+    while i <=length(chemin) 
+        push!(nv_chemin, chemin[i])
+        if chemin[i] == noeud
+            push!(nv_chemin, k)
+            push!(nv_chemin, l)
+            i += 1
         end
         i += 1
     end

@@ -40,7 +40,7 @@ function dijkstraLambda(s, t, d1, d2, p, ph, d, D, deltap, lambda)
     end 
 end
 
-function RechDich(name_instance)
+function RechDich(name_instance, eta, timelimit = 60)
     """ méthode de la recherche dichotomique en faisant varier lambda
     retourne la borne superieure trouvée (distance sur les aretes) et le chemin qui y est associé (pour verifications)"""
     start_time = time() + timelimit # limite de temps fixée à 60 secondes
@@ -59,7 +59,7 @@ function RechDich(name_instance)
 
     iter = 0 # nb de fois ou on a une borne sup améliorante
 
-    while b - a > 1e-5 && iter < 100
+    while b - a > eta
         if time() > start_time
             #println("on sort à cause du temps")
             return(borne_sup, chemin_sup, iter)
@@ -87,7 +87,7 @@ end
 
 function main()
     name_instance="200_USA-road-d.COL.gr"
-    bsup, chemin, _ = @time RechDich(name_instance)
+    bsup, chemin, _ = @time RechDich(name_instance, 1e-5)
 
 
     n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
