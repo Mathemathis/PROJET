@@ -1,3 +1,5 @@
+using Statistics
+
 include("utils/parsing.jl")
 include("utils/utils_heuristic.jl")
 include("constrSol.jl")
@@ -25,16 +27,24 @@ function Vk(k, chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
                 return RechLocSup(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
             else
                 if k == 4
-                    return RechLocInf2(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
+                    return RechLocEch2(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
                 else
-                    return(false, [])
+                    if k == 5 
+                        return RechLocInf2(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
+                    else
+                        if k == 6
+                            return  RechLocSup2(chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
+                        else
+                            return(false, [])
+                        end
+                    end
                 end
             end
         end
     end
 end
 
-function rechLoc(name_instance)
+function rechLoc(name_instance, nb_vois)
     """méthode de la descente de voisinages 
     retourne la borne superieur trouve (distance des aretes) et le chemin associé pour vérifications"""
     timelimit = time() + 60 # limite de temps fixée à 60 secondes
@@ -49,9 +59,12 @@ function rechLoc(name_instance)
 
     # debut des voisinages
     k = 1
-    while k <= 3
+    while k <= nb_vois
         if time() > timelimit
             #println("on sort à cause du temps")
+            if !isChemin(chemin, deltap, s, t)
+                @warn("pas un chemin")
+            end
             return(dist, chemin, iter)
         end
         trouve, nv_chemin =  Vk(k, chemin, d2, ph, p, d1, d, D, deltap, deltam, S, dist, s, t)
@@ -59,10 +72,13 @@ function rechLoc(name_instance)
             k += 1
             #println("ON CHERCHE DANS LE VOISINAGE ", k)
         else
+            nv_chemin  = deleteBoucles(nv_chemin)
+            #println("k = ", k)
             chemin = nv_chemin
             dist = Dist(chemin, d1, d, D)
             k = 1
             iter += 1
+            #println("nouveau chemin = ", nv_chemin)
         end
     end
     return(dist, chemin, iter)

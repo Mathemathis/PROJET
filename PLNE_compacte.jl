@@ -4,8 +4,9 @@ include("./utils/parsing.jl")
 include("./utils/utils_heuristic.jl")
 include("./constrSol.jl")
 
-function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64}, d::Dict{Any, Any}, name_instance, is_perturbated, timelimit)
+function plne_compacte(name_instance, is_perturbated, timelimit)
     """Crée un modèle et résout le problème compact (sans incertitudes)"""
+    n, s, t, S, d1, d2, p, ph, d, D = read_file("./data/$name_instance")
     deltap, deltam=initDelta(d, n)
 
     Keys=collect(keys(D))
@@ -97,15 +98,17 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
     end
 
     # Obtenir le chemin absolu du fichier de journal dans le répertoire actuel
-    logfile_path = abspath(logfile_name)
-    logfile = open(logfile_path, "w")
-    redirect_stdout(logfile)
+    #logfile_path = abspath(logfile_name)
+    #logfile = open(logfile_path, "w")
+    #redirect_stdout(logfile)
 
     @objective(m, Min, sum(x[i,j]*d[i,j] for i in 1:n for j in deltap[i])) 
     # @objective(m, Min, sum(d_i*k*y[d_i,k] for d_i in d_set for k in 1:Kd_set[d_i]))
 
     # Résolution d’un modèle
+    start = time()
     optimize!(m)
+    computation_time = time() - start
 
     feasibleSolutionFound = primal_status(m) == MOI.FEASIBLE_POINT
     isOptimal = termination_status(m) == MOI.OPTIMAL
@@ -117,9 +120,9 @@ function plne_compacte(n::Int64, s::Int64, t::Int64, S::Int64, p::Vector{Int64},
         # Récupération des valeurs d’une variable 
         # println("Value x : ", JuMP.value.(x))
         println(JuMP.objective_value(m))
-        return JuMP.value.(x), JuMP.value.(a)
+        return name_instance, computation_time, JuMP.objective_value(m), objective_bound(m)
     end
-    close(logfile)
+    #close(logfile)
 end
 
 # function isIntegerPoint(cb_data::CPLEX.CallbackContext, context_id::Clong)

@@ -45,7 +45,7 @@ function branchAndCut(name_instance, symmetry, with_initial_values, timelimit)
     p_set, ph_set, Kp_set, Kph_set, A_p_set, A_ph_set=calcul_p_ph_k_set(p, ph, S)
 
     m = Model(CPLEX.Optimizer)
-    #set_silent(m)
+    set_silent(m)
     
     set_optimizer_attribute(m, "CPXPARAM_Preprocessing_Presolve", 0)
     set_optimizer_attribute(m, "CPXPARAM_MIP_Limits_CutsFactor", 0)
