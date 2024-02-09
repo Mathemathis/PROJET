@@ -17,7 +17,7 @@ Ce repo contient
  - heurVois.jl qui implémente la recherche locale de voisinages
  - pipeline.jl pour tester les résultats
  - plans_coupants.jl (méthode Plans coupants)
- - PLNE_dual.jl (méthode Plans coupants)
+ - PLNE_dual.jl (méthode dualisation)
  - des fichiers sandbox et des notebooks où nous avons fait des test
 
    Plusieurs méthodes ont des paramètres pour utiliser des variables d'agrégation, perturber l'instance par exemple.
