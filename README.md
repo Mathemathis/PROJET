@@ -11,13 +11,16 @@ Ce repo contient
  
  Des fichiers Julia pour chaque méthode
  - PLNE_compacte.jl (méthode statique)
- - branch_cut.jl
+ - branch_cut.jl (méthode Branch&Cut)
  - constrSol.jl qui construit une solution réalisable avec la variante de l'algorithme de Dirjska
  - heurDich.jl implémentant l'heuristique dichotomique
  - heurVois.jl qui implémente la recherche locale de voisinages
  - pipeline.jl pour tester les résultats
- - plans_coupants.jl
+ - plans_coupants.jl (méthode Plans coupants)
+ - PLNE_dual.jl (méthode Plans coupants)
  - des fichiers sandbox et des notebooks où nous avons fait des test
+
+   Plusieurs méthodes ont des paramètres pour utiliser des variables d'agrégation, perturber l'instance par exemple.
 
 
  Un fichier Python analyse.py d'analyse des résultats. Un fichier sandbox.py est présent dans la branche exploitation-resultats pour les graphiques et comparaison des méthodes
