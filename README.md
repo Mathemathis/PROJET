@@ -5,11 +5,12 @@ Ce repo contient
 - un dossier results contenant nos resultats
 - un dossier txtFiles contenant l'output du solveur de la résolution de certaines instances
 - un dossier utils contenant :
-     - les fonction de parsing
+     - les fonctions de parsing, de simplification des graphes et de calcul des partitions des sommets et des arêtes (variables d'agrégation)
      - un fichier utils_heuristic (déplacement vers un voisin, test sur les chemins, calcul des distances et poids robustes)
      - un fichier voisinages (recherche de voisinages améliorants)
  
- Des fichiers Julia
+ Des fichiers Julia pour chaque méthode
+ - PLNE_compacte.jl (méthode statique)
  - branch_cut.jl
  - constrSol.jl qui construit une solution réalisable avec la variante de l'algorithme de Dirjska
  - heurDich.jl implémentant l'heuristique dichotomique
